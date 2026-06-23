@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSA Study App — WRES1201</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root{--bg:#0f1117;--sf:#1a1d27;--sf2:#22263a;--bd:#2e3350;--bd2:#3d4466;--ac:#6c63ff;--ac2:#4fd1c5;--ac3:#f6ad55;--tx:#e8eaf6;--mu:#8892b0;--gn:#48bb78;--rd:#fc8181;--yw:#f6e05e;--mo:'Courier New',monospace;--sn:'Segoe UI',system-ui,sans-serif;--sw:238px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--tx);font-family:var(--sn);font-size:15px;line-height:1.6;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:var(--sw);background:var(--sf);border-right:1px solid var(--bd);flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;transition:transform .25s;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99;}
+.main{margin-left:var(--sw);flex:1;padding:32px 36px;}
+.hbg{display:none;position:fixed;top:12px;left:12px;z-index:101;background:var(--sf);border:1px solid var(--bd2);border-radius:8px;padding:8px;cursor:pointer;}
+.hbg svg{width:20px;height:20px;color:var(--tx);}
+.logo{padding:18px 18px 14px;border-bottom:1px solid var(--bd);}
+.logo-t{font-size:13px;font-weight:700;color:var(--ac);letter-spacing:.06em;}
+.logo-s{font-size:11px;color:var(--mu);margin-top:2px;}
+.nvsec{padding:14px 14px 4px;font-size:10px;font-weight:700;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;}
+.nvi{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;font-size:13px;color:var(--mu);transition:all .15s;border-left:3px solid transparent;}
+.nvi:hover{background:var(--sf2);color:var(--tx);}
+.nvi.active{background:var(--sf2);color:var(--tx);border-left-color:var(--ac);font-weight:500;}
+.ni{width:15px;height:15px;flex-shrink:0;}
+.nbdg{margin-left:auto;font-size:10px;background:var(--ac);color:#fff;padding:1px 6px;border-radius:99px;}
+.foc{padding:12px 14px;border-top:1px solid var(--bd);}
+.focrow{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--mu);}
+.sw{width:34px;height:19px;border-radius:99px;background:var(--bd2);position:relative;flex-shrink:0;transition:background .2s;}
+.sw::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .2s;}
+.sw.on{background:var(--ac);}.sw.on::after{transform:translateX(15px);}
+.foc-h{font-size:10px;color:var(--mu);margin-top:6px;line-height:1.5;opacity:.8;}
+.pw{padding:14px;border-top:1px solid var(--bd);}
+.pwl{font-size:11px;color:var(--mu);margin-bottom:6px;display:flex;justify-content:space-between;}
+.pb{height:4px;background:var(--bd2);border-radius:99px;overflow:hidden;}
+.pf{height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:99px;transition:width .5s;}
+.page{display:none;}.page.active{display:block;}
+.ph{margin-bottom:28px;}.pt{font-size:22px;font-weight:700;margin-bottom:6px;}.pd{font-size:14px;color:var(--mu);line-height:1.6;}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:20px 22px;margin-bottom:16px;}
+.ct{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.cgr{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:16px;}
+.stat{background:var(--sf2);border-radius:10px;padding:14px 16px;}
+.sl{font-size:11px;color:var(--mu);margin-bottom:4px;}.sv{font-size:26px;font-weight:700;color:var(--ac);}.ss2{font-size:11px;color:var(--mu);margin-top:2px;}
+.bdg{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;text-transform:uppercase;}
+.br{background:rgba(252,129,129,.15);color:var(--rd);}.bg{background:rgba(72,187,120,.15);color:var(--gn);}.by{background:rgba(246,224,94,.15);color:var(--yw);}.bp{background:rgba(108,99,255,.15);color:var(--ac);}.bc{background:rgba(79,209,197,.15);color:var(--ac2);}.bo{background:rgba(246,173,85,.15);color:var(--ac3);}
+.bnf{background:rgba(252,129,129,.12);color:#fc8181;border:1px solid rgba(252,129,129,.4);font-size:9px;padding:2px 7px;border-radius:99px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.fmb{background:var(--sf2);border:1px solid var(--bd2);border-radius:8px;padding:10px 14px;margin:8px 0;font-family:var(--mo);font-size:13px;color:var(--ac2);white-space:pre-wrap;line-height:1.8;}
+.vg{display:grid;grid-template-columns:130px 1fr;gap:4px 12px;margin-top:10px;font-size:12px;}
+.vk{font-family:var(--mo);color:var(--ac3);}.vv{color:var(--mu);}
+.wb{background:rgba(246,173,85,.08);border:1px solid rgba(246,173,85,.3);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:var(--ac3);line-height:1.7;}
+.tb{background:rgba(79,209,197,.08);border:1px solid rgba(79,209,197,.3);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:var(--ac2);line-height:1.7;}
+.ib{background:rgba(108,99,255,.08);border:1px solid rgba(108,99,255,.3);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:#a99fff;line-height:1.7;}
+.nfbanner{background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.3);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#fc9d9d;line-height:1.6;display:flex;gap:8px;align-items:flex-start;}
+.nfbanner svg{width:15px;height:15px;flex-shrink:0;margin-top:2px;}
+.ttabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;align-items:center;}
+.ttab{padding:6px 14px;font-size:12px;font-weight:500;border:1px solid var(--bd2);border-radius:99px;cursor:pointer;color:var(--mu);background:transparent;transition:all .15s;}
+.ttab:hover{border-color:var(--ac);color:var(--tx);}.ttab.active{background:var(--ac);border-color:var(--ac);color:#fff;}
+.ttab.nf{border-color:rgba(252,129,129,.4);}
+.ttab.nf::after{content:' ⊘';color:var(--rd);font-size:11px;}
+.rtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.rtab{padding:5px 12px;font-size:12px;border:1px solid var(--bd2);border-radius:99px;cursor:pointer;color:var(--mu);background:transparent;transition:all .15s;}
+.rtab:hover,.rtab.active{background:var(--sf2);color:var(--tx);}
+.rsec{display:none;}.rsec.active{display:block;}
+.qcard{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:22px;margin-bottom:18px;}
+.qcard.nfq{border-color:rgba(252,129,129,.25);}
+.qn{font-size:11px;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.qdesc{font-size:12px;color:var(--mu);background:var(--sf2);border-radius:6px;padding:8px 12px;margin-bottom:12px;border-left:2px solid var(--bd2);line-height:1.6;}
+.qt{font-size:15px;color:var(--tx);line-height:1.75;margin-bottom:16px;}
+.qh{font-size:12px;color:var(--mu);background:var(--sf2);border-radius:8px;padding:8px 12px;margin-bottom:14px;display:none;border-left:2px solid var(--ac3);}
+.qh.show{display:block;}
+.ai{background:var(--sf2);border:1px solid var(--bd2);border-radius:8px;padding:11px 14px;font-size:14px;color:var(--tx);font-family:var(--mo);outline:none;transition:border-color .15s;width:230px;}
+.ai:focus{border-color:var(--ac);}.ai.ok{border-color:var(--gn);background:rgba(72,187,120,.06);}.ai.no{border-color:var(--rd);background:rgba(252,129,129,.06);}
+.brow{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center;}
+.btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+.btn svg{width:14px;height:14px;}
+.btnp{background:var(--ac);color:#fff;}.btnp:hover{background:#7b74ff;}
+.btno{background:transparent;border:1px solid var(--bd2);color:var(--mu);}.btno:hover{border-color:var(--ac);color:var(--tx);}
+.btnh{background:transparent;border:1px solid rgba(246,173,85,.4);color:var(--ac3);font-size:12px;padding:7px 14px;}
+.fb2{margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13px;display:none;line-height:1.7;}
+.fb2.show{display:block;}.fb2.ok{background:rgba(72,187,120,.08);border:1px solid rgba(72,187,120,.3);color:var(--gn);}.fb2.no{background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.3);color:var(--rd);}
+.sol{margin-top:10px;font-family:var(--mo);font-size:12px;color:var(--tx);line-height:2;white-space:pre-wrap;}
+.mopts{display:grid;gap:8px;margin-bottom:14px;}
+.mopt{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border:1px solid var(--bd2);border-radius:8px;cursor:pointer;transition:all .15s;font-size:14px;line-height:1.6;}
+.mopt:hover{border-color:var(--ac);background:rgba(108,99,255,.06);}
+.mopt.ca{border-color:var(--gn);background:rgba(72,187,120,.08);color:var(--gn);}.mopt.wa{border-color:var(--rd);background:rgba(252,129,129,.06);color:var(--rd);}
+.olet{width:22px;height:22px;border-radius:50%;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.brow2{display:flex;gap:3px;margin:8px 0;flex-wrap:wrap;}
+.bit{width:38px;height:38px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--mo);font-size:16px;font-weight:700;border:1px solid var(--bd2);transition:all .3s;}
+.b1{background:rgba(108,99,255,.2);border-color:var(--ac);color:var(--ac);}.b0{background:var(--sf2);color:var(--mu);}
+.bnew{animation:pop .35s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+.ssel{background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);padding:7px 12px;border-radius:8px;font-size:13px;outline:none;}
+.scbd{display:flex;gap:14px;margin-bottom:24px;flex-wrap:wrap;}
+.sci{background:var(--sf2);border-radius:10px;padding:12px 16px;flex:1;min-width:70px;text-align:center;}
+.scn{font-size:26px;font-weight:700;}.scl{font-size:11px;color:var(--mu);margin-top:2px;}
+hr{border:none;border-top:1px solid var(--bd);margin:18px 0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:9px 12px;background:var(--sf2);color:var(--mu);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+td{padding:9px 12px;border-bottom:1px solid var(--bd);color:var(--tx);}
+td:first-child{font-family:var(--mo);color:var(--ac2);font-weight:600;}
+.hlr td{background:rgba(108,99,255,.05);}
+.atg{display:inline-block;padding:2px 8px;border-radius:4px;font-family:var(--mo);font-size:13px;font-weight:700;margin:2px;}
+.at{background:rgba(108,99,255,.2);color:#a99fff;border:1px solid rgba(108,99,255,.4);}
+.al2{background:rgba(79,209,197,.2);color:var(--ac2);border:1px solid rgba(79,209,197,.4);}
+.ab2{background:rgba(246,173,85,.2);color:var(--ac3);border:1px solid rgba(246,173,85,.4);}
+.hcell{width:44px;height:44px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mo);font-size:12px;font-weight:700;border:1px solid var(--bd2);}
+.hcp2{font-size:9px;color:var(--mu);font-weight:400;}
+.hpar{background:rgba(108,99,255,.2);border-color:var(--ac);color:var(--ac);}
+.hdat{background:var(--sf2);color:var(--tx);}
+.ci2{background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);padding:9px 12px;border-radius:8px;font-size:14px;width:220px;outline:none;}
+.ci2:focus{border-color:var(--ac);}
+.co2{margin-top:16px;font-family:var(--mo);font-size:14px;color:var(--ac2);background:var(--sf2);border-radius:8px;padding:14px 16px;display:none;line-height:2.2;}
+code{background:var(--sf2);padding:1px 6px;border-radius:4px;font-family:var(--mo);}
+.refbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-left:auto;}
+.cgsel{background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);padding:6px 10px;border-radius:8px;font-size:12px;outline:none;}
+@media(max-width:768px){
+  .hbg{display:flex;}
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .overlay.open{display:block;}
+  .main{margin-left:0;padding:20px 16px;padding-top:60px;}
+  .bit{width:30px;height:30px;font-size:13px;}
+  .ai{width:180px;}.cgr{grid-template-columns:1fr 1fr;}
+  .refbar{margin-left:0;width:100%;}
+}
+@media(max-width:400px){.cgr{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<button class="hbg" onclick="togSB()"><i data-lucide="menu"></i></button>
+<div class="overlay" id="ov" onclick="togSB()"></div>
+<div class="app">
+<div class="sidebar" id="sb">
+  <div class="logo"><div class="logo-t">CSA STUDY APP</div><div class="logo-s">WRES1201 &middot; rafiarsya.com</div></div>
+  <div class="nvsec">Learn</div>
+  <div class="nvi active" onclick="showP('home',this)"><i data-lucide="layout-dashboard" class="ni"></i>Dashboard</div>
+  <div class="nvi" onclick="showP('topics',this)"><i data-lucide="book-open" class="ni"></i>Topic Guide</div>
+  <div class="nvi" onclick="showP('formulas',this)"><i data-lucide="function-square" class="ni"></i>Formula Reference</div>
+  <div class="nvsec">Practice</div>
+  <div class="nvi" onclick="showP('challenge',this)"><i data-lucide="zap" class="ni"></i>Challenges<span class="nbdg" id="nb-ch">0</span></div>
+  <div class="nvi" onclick="showP('mcq',this)"><i data-lucide="circle-dot" class="ni"></i>MCQ Drill<span class="nbdg" id="nb-mcq">0</span></div>
+  <div class="nvsec">Tools</div>
+  <div class="nvi" onclick="showP('shift',this)"><i data-lucide="arrow-left-right" class="ni"></i>Shift Visualizer</div>
+  <div class="nvi" onclick="showP('hamming',this)"><i data-lucide="binary" class="ni"></i>Hamming Code</div>
+  <div class="nvi" onclick="showP('mapper',this)"><i data-lucide="map" class="ni"></i>Cache Mapper</div>
+  <div class="nvi" onclick="showP('calc',this)"><i data-lucide="calculator" class="ni"></i>Calculator</div>
+  <div class="foc">
+    <div class="focrow" onclick="togFocus()"><div class="sw" id="focsw"></div><span>Focus mode</span></div>
+    <div class="foc-h">Hide topics not in the final (T1, T7, T9).</div>
+  </div>
+  <div class="pw"><div class="pwl"><span>Progress</span><span id="ppt">0%</span></div><div class="pb"><div class="pf" id="pfill" style="width:0%"></div></div></div>
+</div>
+<div class="main">
+<div id="page-home" class="page active">
+  <div class="ph"><div class="pt">CSA Final Exam Study App</div><div class="pd">Complete guide for WRES1201 &mdash; refreshable practice with randomized numbers every reload &middot; interactive tools<br>Share with classmates at <strong style="color:var(--ac)">rafiarsya.com</strong></div></div>
+  <div class="nfbanner"><i data-lucide="alert-triangle"></i><div><strong>Exam scope:</strong> Final covers performance, bus, cache, memory, disk/RAID, instruction sets, and pipelining. Topics <strong>T1 (Intro), T7 (I/O), and T9 (Multiprocessors / MESI / Amdahl)</strong> are <strong>not in the final</strong> &mdash; they're kept here labelled, and you can hide them with <em>Focus mode</em> in the sidebar.</div></div>
+  <div class="cgr">
+    <div class="stat"><div class="sl">Challenges Solved</div><div class="sv" id="stat-s">0</div><div class="ss2" id="stat-s2">of 0</div></div>
+    <div class="stat"><div class="sl">Accuracy</div><div class="sv" id="stat-a">&#8212;</div><div class="ss2">first try</div></div>
+    <div class="stat"><div class="sl">MCQ Correct</div><div class="sv" id="stat-m">0</div><div class="ss2" id="stat-m2">of 0</div></div>
+    <div class="stat"><div class="sl">Streak</div><div class="sv" id="stat-k">0</div><div class="ss2">in a row</div></div>
+  </div>
+  <div class="card"><div class="ct"><i data-lucide="bar-chart-2" style="width:15px;height:15px;color:var(--mu)"></i>Topic progress (challenges)</div><div id="tprog"></div></div>
+  <div class="card"><div class="ct"><i data-lucide="info" style="width:15px;height:15px;color:var(--mu)"></i>What&apos;s inside</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;">
+      <div style="background:var(--sf2);border-radius:8px;padding:12px;"><div style="color:var(--ac);font-weight:600;font-size:13px;margin-bottom:4px;">Topic Guide</div><div style="font-size:12px;color:var(--mu);">Every T1&ndash;T10 topic &mdash; concepts and exam focus, with final-scope tags.</div></div>
+      <div style="background:var(--sf2);border-radius:8px;padding:12px;"><div style="color:var(--ac2);font-weight:600;font-size:13px;margin-bottom:4px;">Refreshable Challenges</div><div style="font-size:12px;color:var(--mu);">Calculation problems with <strong>new random numbers</strong> every reload. Full step-by-step solutions.</div></div>
+      <div style="background:var(--sf2);border-radius:8px;padding:12px;"><div style="color:var(--ac3);font-weight:600;font-size:13px;margin-bottom:4px;">Refreshable MCQs</div><div style="font-size:12px;color:var(--mu);">Concept + applied questions, options shuffled and re-rolled each refresh.</div></div>
+      <div style="background:var(--sf2);border-radius:8px;padding:12px;"><div style="color:var(--gn);font-weight:600;font-size:13px;margin-bottom:4px;">Interactive Tools</div><div style="font-size:12px;color:var(--mu);">Shift visualizer, Hamming calculator, Cache mapper, Smart calculator.</div></div>
+    </div>
+  </div>
+</div>
+<div id="page-topics" class="page"><div class="ph"><div class="pt">Topic Guide</div><div class="pd">What each topic is, why it matters, key concepts, and exam focus. Not-in-final topics are tagged.</div></div><div id="tgcon"></div></div>
+<div id="page-formulas" class="page"><div class="ph"><div class="pt">Formula Reference</div><div class="pd">Every formula &mdash; name, when to use it, variables explained, worked example.</div></div><div class="rtabs" id="ftabs"></div><div id="fsecs"></div></div>
+<div id="page-challenge" class="page">
+  <div class="ph"><div class="pt">Calculation Challenges</div><div class="pd">Type your numerical answer. 2% rounding tolerance accepted. Full solution after every attempt. Hit <strong>New random set</strong> for fresh numbers.</div></div>
+  <div class="scbd">
+    <div class="sci"><div class="scn" id="ch-c" style="color:var(--gn)">0</div><div class="scl">Correct</div></div>
+    <div class="sci"><div class="scn" id="ch-w" style="color:var(--rd)">0</div><div class="scl">Wrong</div></div>
+    <div class="sci"><div class="scn" id="ch-sk" style="color:var(--mu)">0</div><div class="scl">Skipped</div></div>
+    <div class="sci"><div class="scn" id="ch-r" style="color:var(--ac)">0</div><div class="scl">Left</div></div>
+  </div>
+  <div class="ttabs" id="chtabs"></div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px;">
+    <button class="btn btnp" onclick="regenCH()"><i data-lucide="refresh-cw"></i>New random set</button>
+    <select class="cgsel" id="ch-count" onchange="regenCH()">
+      <option value="20">20 per set</option><option value="30">30 per set</option>
+      <option value="40" selected>40 per set</option><option value="60">60 per set</option>
+    </select>
+    <span style="font-size:12px;color:var(--mu);" id="ch-info"></span>
+  </div>
+  <div id="chcon"></div>
+</div>
+<div id="page-mcq" class="page">
+  <div class="ph"><div class="pt">MCQ Concept Drill</div><div class="pd">Theory + applied questions covering all topics. Options shuffle and re-roll each refresh.</div></div>
+  <div class="scbd">
+    <div class="sci"><div class="scn" id="mq-c" style="color:var(--gn)">0</div><div class="scl">Correct</div></div>
+    <div class="sci"><div class="scn" id="mq-w" style="color:var(--rd)">0</div><div class="scl">Wrong</div></div>
+    <div class="sci"><div class="scn" id="mq-r" style="color:var(--ac)">0</div><div class="scl">Left</div></div>
+  </div>
+  <div class="ttabs" id="mqtabs"></div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px;">
+    <button class="btn btnp" onclick="regenMQ()"><i data-lucide="refresh-cw"></i>New random set</button>
+    <select class="cgsel" id="mq-count" onchange="regenMQ()">
+      <option value="20">20 per set</option><option value="30">30 per set</option>
+      <option value="40" selected>40 per set</option><option value="60">60 per set</option>
+    </select>
+    <span style="font-size:12px;color:var(--mu);" id="mq-info"></span>
+  </div>
+  <div id="mqcon"></div>
+</div>
+<div id="page-shift" class="page">
+  <div class="ph"><div class="pt">Shift Visualizer</div><div class="pd">Tutorial 8 exam uses <code>10101110</code> shifted by 4 bits. Try all 6 shift types here.</div></div>
+  <div class="card">
+    <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px;">
+      <div><div style="font-size:11px;color:var(--mu);margin-bottom:5px;">8-bit binary</div><input id="bin-in" type="text" value="10101110" maxlength="8" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);padding:9px 12px;border-radius:8px;font-family:var(--mo);font-size:18px;width:170px;letter-spacing:4px;outline:none;"></div>
+      <div><div style="font-size:11px;color:var(--mu);margin-bottom:5px;">Amount</div><select id="sh-n" class="ssel" onchange="doShift()"><option value="1">1 bit</option><option value="2">2 bits</option><option value="3">3 bits</option><option value="4" selected>4 bits</option><option value="5">5 bits</option><option value="6">6 bits</option></select></div>
+      <div><div style="font-size:11px;color:var(--mu);margin-bottom:5px;">Type</div><select id="sh-t" class="ssel" onchange="doShift()"><option value="lr">Logical Right</option><option value="ll">Logical Left</option><option value="ar">Arithmetic Right</option><option value="al">Arithmetic Left</option><option value="rr">Right Rotate</option><option value="rl">Left Rotate</option></select></div>
+      <button class="btn btnp" onclick="doShift()"><i data-lucide="play"></i>Apply</button>
+    </div>
+    <hr>
+    <div style="font-size:11px;color:var(--mu);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Original</div>
+    <div class="brow2" id="bits-orig"></div>
+    <div style="margin:10px 0 6px;display:flex;align-items:center;gap:8px;"><i data-lucide="arrow-down" style="width:14px;height:14px;color:var(--mu)"></i><span id="sh-lbl" style="color:var(--ac3);font-weight:600;font-size:13px;"></span></div>
+    <div class="brow2" id="bits-res"></div>
+    <div id="sh-exp" style="margin-top:14px;font-size:13px;color:var(--mu);background:var(--sf2);border-radius:8px;padding:12px 14px;line-height:1.8;"></div>
+  </div>
+  <div class="card"><div class="ct"><i data-lucide="table" style="width:14px;height:14px;color:var(--mu)"></i>All 6 shifts at once</div><div id="all-sh"></div></div>
+  <div class="card"><div class="ct"><i data-lucide="info" style="width:14px;height:14px;color:var(--mu)"></i>Rules</div>
+    <table><tr><th>Type</th><th>Empty bits filled with</th><th>Bits that fall off</th></tr>
+    <tr><td>Logical Right</td><td style="color:var(--ac2)">0 always</td><td style="color:var(--mu)">Discarded</td></tr>
+    <tr><td>Logical Left</td><td style="color:var(--ac2)">0 always</td><td style="color:var(--mu)">Discarded</td></tr>
+    <tr class="hlr"><td>Arithmetic Right</td><td style="color:var(--ac3)">MSB (sign bit) copy</td><td style="color:var(--mu)">Discarded</td></tr>
+    <tr><td>Arithmetic Left</td><td style="color:var(--ac2)">0 (same as logical left)</td><td style="color:var(--mu)">Discarded</td></tr>
+    <tr><td>Right Rotate</td><td style="color:var(--gn)">Bits from right end</td><td style="color:var(--gn)">Wrap to left</td></tr>
+    <tr><td>Left Rotate</td><td style="color:var(--gn)">Bits from left end</td><td style="color:var(--gn)">Wrap to right</td></tr></table>
+  </div>
+</div>
+<div id="page-hamming" class="page">
+  <div class="ph"><div class="pt">Hamming Code Calculator</div><div class="pd">Tutorial 5: find check bits for data word <code>11000010</code>. Enter any 8-bit word below.</div></div>
+  <div class="card"><div class="ct"><i data-lucide="info" style="width:14px;height:14px;color:var(--mu)"></i>How it works</div>
+    <div style="font-size:13px;color:var(--mu);line-height:1.8;">Hamming code adds <strong style="color:var(--tx)">parity bits</strong> at power-of-2 positions (1,2,4,8&hellip;) to detect and correct single-bit memory errors. Each parity bit checks a specific group of positions. For 8 data bits we need <strong style="color:var(--ac2)">4 check bits</strong> &rarr; 12-bit codeword.</div>
+    <div class="ib" style="margin-top:10px;">Parity positions: P1=pos1, P2=pos2, P4=pos4, P8=pos8 &nbsp;|&nbsp; Data: D1=3, D2=5, D3=6, D4=7, D5=9, D6=10, D7=11, D8=12</div>
+  </div>
+  <div class="card"><div class="ct"><i data-lucide="calculator" style="width:14px;height:14px;color:var(--mu)"></i>Calculator</div>
+    <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px;">
+      <div><div style="font-size:11px;color:var(--mu);margin-bottom:5px;">8-bit data word</div><input type="text" id="ham-in" value="11000010" maxlength="8" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);padding:9px 12px;border-radius:8px;font-family:var(--mo);font-size:16px;width:170px;letter-spacing:4px;outline:none;"></div>
+      <button class="btn btnp" onclick="calcHam()"><i data-lucide="play"></i>Calculate</button>
+    </div>
+    <div id="ham-out"></div>
+  </div>
+</div>
+<div id="page-mapper" class="page">
+  <div class="ph"><div class="pt">Cache Address Mapper</div><div class="pd">Tutorial 4: split addresses into Tag | Line | Byte. Find which cache line each maps to.</div></div>
+  <div class="card"><div class="ct"><i data-lucide="info" style="width:14px;height:14px;color:var(--mu)"></i>How direct-mapped addressing works</div>
+    <div style="font-size:13px;color:var(--mu);line-height:1.8;">Every address splits into 3 fields (LSB &rarr; MSB):<br><br>
+    <span class="atg ab2">Byte offset</span> &mdash; which byte within the block. Bits = log&#8322;(block size)<br>
+    <span class="atg al2">Line number</span> &mdash; which cache line it maps to. Bits = log&#8322;(lines)<br>
+    <span class="atg at">Tag</span> &mdash; identifies which memory block is loaded. Remaining bits.<br><br>
+    Two addresses with the same Line field compete for the same cache slot.</div>
+  </div>
+  <div class="card"><div class="ct"><i data-lucide="sliders" style="width:14px;height:14px;color:var(--mu)"></i>Configure</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;">
+      <div><div style="font-size:11px;color:var(--mu);margin-bottom:5px;">Address bits</div><select id="m-ab" class="ssel" onchange="updMap()"><option value="16" selected>16-bit</option><option value="20">20-bit</option><option value="32">32-bit</option></select></div>
+      <div><div style="font-size:11px;color:var(--mu);margin-bottom:5px;">Cache lines</div><select id="m-cl" class="ssel" onchange="updMap()"><option value="16">16</option><option value="32" selected>32</option><option value="64">64</option><option value="128">128</option></select></div>
+      <div><div style="font-size:11px;color:var(--mu);margin-bottom:5px;">Block size</div><select id="m-bs" class="ssel" onchange="updMap()"><option value="4">4 bytes</option><option value="8" selected>8 bytes</option><option value="16">16 bytes</option><option value="32">32 bytes</option></select></div>
+    </div>
+    <div id="m-cfg"></div>
+    <hr>
+    <div style="font-size:11px;color:var(--mu);margin-bottom:6px;margin-top:12px;">Enter address (binary or 0x hex) to trace</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <input type="text" id="m-in" placeholder="e.g. 0001000100011011 or 0x11AB" style="background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);padding:9px 12px;border-radius:8px;font-family:var(--mo);font-size:14px;width:280px;outline:none;">
+      <button class="btn btnp" onclick="traceAddr()"><i data-lucide="search"></i>Trace</button>
+    </div>
+    <div id="m-out" style="margin-top:14px;"></div>
+    <hr>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:8px;">Tutorial 4 addresses (set 16-bit / 32 lines / 8 bytes)</div>
+    <div id="m-tut"></div>
+  </div>
+</div>
+<div id="page-calc" class="page"><div class="ph"><div class="pt">Smart Calculator</div><div class="pd">Fill in what the question gives you &mdash; get all outputs instantly.</div></div><div class="ttabs" id="cal-tabs"></div><div id="cal-con"></div></div>
+</div></div>
+<script>
+/* =========================================================================
+   TOPIC METADATA — inFinal flag drives the "not in final" labels + focus mode
+   ========================================================================= */
+const TM={
+  T1:{label:'T1 \u00b7 Computer Basics',bg:'bo',inFinal:false},
+  T2:{label:'T2 \u00b7 CPU Performance',bg:'bp',inFinal:true},
+  T3:{label:'T3 \u00b7 Bus & Interrupts',bg:'bc',inFinal:true},
+  T4:{label:'T4 \u00b7 Cache Memory',bg:'by',inFinal:true},
+  T5:{label:'T5 \u00b7 Semiconductor Memory',bg:'bo',inFinal:true},
+  T6:{label:'T6 \u00b7 Disk & RAID',bg:'by',inFinal:true},
+  T7:{label:'T7 \u00b7 Input/Output',bg:'bc',inFinal:false},
+  T8:{label:'T8 \u00b7 Instruction Sets',bg:'bp',inFinal:true},
+  T9:{label:'T9 \u00b7 Multiprocessors',bg:'br',inFinal:false},
+  T10:{label:'T10 \u00b7 Pipelining',bg:'br',inFinal:true},
+};
+let FOCUS=false; // hide non-final topics when true
+
+/* =========================================================================
+   HELPERS
+   ========================================================================= */
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function pick(a){return a[rnd(0,a.length-1)];}
+function shuf(a){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=rnd(0,i);[r[i],r[j]]=[r[j],r[i]];}return r;}
+function round(n,d=2){const f=Math.pow(10,d);return Math.round(n*f)/f;}
+function fmt(n,d=2){if(Number.isInteger(n))return n.toString();return round(n,d).toString();}
+function uid(){return Math.random().toString(36).slice(2,10);}
+function nf(tk){return TM[tk]&&!TM[tk].inFinal;}
+function buildOpts(correct,distract){
+  const seen=new Set(),pool=[];
+  [correct,...distract].forEach(p=>{if(!seen.has(p)){seen.add(p);pool.push(p);}});
+  while(pool.length<4)pool.push(pool[pool.length-1]+' ');
+  const opts=shuf(pool.slice(0,4));
+  return{opts,c:opts.indexOf(correct)};
+}
+
+/* =========================================================================
+   CHALLENGE GENERATORS  (numeric answer)
+   each returns {tk, ds, q, h, a, u, s}
+   ========================================================================= */
+const CGEN=[];
+
+CGEN.push(()=>{ // T2 total cycles from mix
+  const clk=pick([60,80,100,120,150]),tot=pick([80000,100000,120000]);
+  const pI=pick([40,45,50]),pD=pick([20,25,30]),pF=pick([10,15]),pC=100-pI-pD-pF;
+  if(pC<5)return CGEN[0]();
+  const cI=1,cD=pick([2,3]),cF=pick([2,3]),cC=pick([2,3]);
+  const nI=Math.round(tot*pI/100),nD=Math.round(tot*pD/100),nF=Math.round(tot*pF/100),nC=tot-nI-nD-nF;
+  const cyc=nI*cI+nD*cD+nF*cF+nC*cC;
+  return{tk:'T2',ds:'T2: Instruction mix \u2014 multiply each type by its CPI then sum all. ALWAYS the first step.',
+    q:`${clk} MHz processor, instruction mix:<br><br>&bull; Integer: ${nI.toLocaleString()} \u00d7 ${cI} cycle<br>&bull; Data Transfer: ${nD.toLocaleString()} \u00d7 ${cD} cycles<br>&bull; Float: ${nF.toLocaleString()} \u00d7 ${cF} cycles<br>&bull; Control: ${nC.toLocaleString()} \u00d7 ${cC} cycles<br><br>What is the <strong>total clock cycles</strong>?`,
+    h:'Multiply each count \u00d7 CPI, then add.',a:cyc,u:'cycles',
+    s:`${nI}\u00d7${cI}=${nI*cI}\n${nD}\u00d7${cD}=${nD*cD}\n${nF}\u00d7${cF}=${nF*cF}\n${nC}\u00d7${cC}=${nC*cC}\nTotal = ${cyc.toLocaleString()} cycles`};
+});
+
+CGEN.push(()=>{ // T2 CPI
+  const tot=pick([100000,120000,150000]),cyc=Math.round(tot*round(pick([12,15,18,20,22,25])/10,2));
+  const cpi=round(cyc/tot,2);
+  return{tk:'T2',ds:'T2: CPI = Total Cycles / Instruction Count. Second step after total cycles.',
+    q:`${cyc.toLocaleString()} total cycles, ${tot.toLocaleString()} instructions. <strong>CPI</strong>?`,
+    h:'CPI = Total Cycles / IC',a:cpi,u:'',s:`CPI = ${cyc.toLocaleString()} / ${tot.toLocaleString()} = ${cpi}`};
+});
+
+CGEN.push(()=>{ // T2 MIPS
+  const clk=pick([60,80,100,120,150,200]),cpi=round(pick([12,15,18,20,25])/10,2);
+  const mips=round(clk/cpi,2);
+  return{tk:'T2',ds:'T2: MIPS = Clock Rate (Hz) / (CPI \u00d7 10\u2076). Keep clock in Hz.',
+    q:`CPI=${cpi}, clock=${clk} MHz. <strong>MIPS rate</strong>?`,
+    h:`MIPS = ${clk},000,000 / (${cpi} \u00d7 1,000,000)`,a:mips,u:'MIPS',
+    s:`MIPS = ${clk}\u00d710\u2076 / (${cpi}\u00d710\u2076) = ${clk}/${cpi} = ${mips} MIPS`};
+});
+
+CGEN.push(()=>{ // T2 exec time ms
+  const clk=pick([80,100,120,150]),cyc=pick([120000,150000,180000,200000]);
+  const t=round(cyc/(clk*1e6)*1000,3);
+  return{tk:'T2',ds:'T2: Execution Time = Total Cycles / Clock Rate.',
+    q:`${cyc.toLocaleString()} cycles, ${clk} MHz. <strong>Execution time</strong> in ms?`,
+    h:'T = Total Cycles / Clock Rate. \u00d71000 for ms.',a:t,u:'ms',
+    s:`T = ${cyc.toLocaleString()}/${clk}\u00d710\u2076 = ${round(cyc/(clk*1e6),6)} s \u2248 ${t} ms`};
+});
+
+CGEN.push(()=>{ // T2 speedup A vs B
+  const ca=pick([200,250,300,350]),pa=round(pick([15,18,20,22])/10,1);
+  const cb=pick([400,450,500,550]),pb=round(pick([10,12,14])/10,1);
+  const ta=ca*pa,tb=cb*pb,sp=round(Math.max(ta,tb)/Math.min(ta,tb),3),fast=ta<tb?'A':'B';
+  return{tk:'T2',ds:'T2: CPU time/instr = CPI \u00d7 cycle time. Speedup = slower/faster.',
+    q:`A: ${ca}ps cycle, CPI=${pa} &nbsp; B: ${cb}ps cycle, CPI=${pb}<br><br>How many times faster is the <strong>faster machine</strong>? (answer the ratio)`,
+    h:`A=${ca}\u00d7${pa}=${ta}ps, B=${cb}\u00d7${pb}=${tb}ps. Speedup=${Math.max(ta,tb)}/${Math.min(ta,tb)}.`,a:sp,u:'x',
+    s:`A: ${ca}\u00d7${pa}=${ta} ps/instr\nB: ${cb}\u00d7${pb}=${tb} ps/instr\nFaster = ${fast}. Speedup = ${Math.max(ta,tb)}/${Math.min(ta,tb)} = ${sp}\u00d7`};
+});
+
+CGEN.push(()=>{ // T2 CPI from time
+  const clk=pick([100,120,150,200]),icM=pick([8,10,12,15]),t=round(pick([15,20,25,30])/100,2);
+  const cpi=round((clk*1e6*t)/(icM*1e6),3);
+  return{tk:'T2',ds:'T2: CPI = (Clock \u00d7 Time) / IC. CPI < 1 \u2192 superscalar.',
+    q:`${clk} MHz processor, ${icM}M instructions in ${t} s. <strong>CPI</strong>?`,
+    h:'CPI = (Clock \u00d7 Time) / IC',a:cpi,u:'',
+    s:`CPI = (${clk}\u00d710\u2076 \u00d7 ${t}) / ${icM}\u00d710\u2076 = ${cpi}\nCPI ${cpi<1?'< 1 \u2192 SUPERSCALAR':'\u2265 1 \u2192 not superscalar'}.`};
+});
+
+CGEN.push(()=>{ // T2 MIPS after clock change
+  const f1=pick([40,50,60,75]),mult=pick([1.25,1.5,2]),f2=f1*mult,p=pick([80,100,120]);
+  const pn=round(p*mult,1);
+  return{tk:'T2',ds:'T2: Same architecture \u2192 MIPS scales linearly with clock.',
+    q:`P at ${f1} MHz = ${p} MIPS. Same-arch P\u2019 at ${f2} MHz. <strong>New MIPS (p\u2019)</strong>?`,
+    h:`p' = ${p} \u00d7 (${f2}/${f1})`,a:pn,u:'MIPS',
+    s:`p' = ${p} \u00d7 ${mult} = ${pn} MIPS\nValid only because architecture is identical (CPI unchanged).`};
+});
+
+CGEN.push(()=>{ // T3 bus transfer rate
+  const w=pick([8,16,32,64]),clk=pick([8,16,20,25,33]),cy=pick([2,3,4,5]);
+  const rate=round((w/8)*clk*1e6/cy,0);
+  return{tk:'T3',ds:'T3: Transfer Rate = Bus Width (BYTES) \u00d7 Clock / Bus Cycles. Convert bits\u2192bytes first.',
+    q:`Microprocessor with <strong>${w}-bit external data bus</strong>, ${clk} MHz, ${cy}-cycle bus cycle.<br><br><strong>Transfer rate</strong> in bytes/s?`,
+    h:`${w}-bit \u00f7 8 = ${w/8} bytes. Rate = ${w/8}\u00d7${clk}M/${cy}.`,a:rate,u:'bytes/s',
+    s:`${w}-bit \u00f7 8 = ${w/8} bytes\n${w/8} \u00d7 ${clk},000,000 / ${cy} = ${rate.toLocaleString()} bytes/s = ${round(rate/1e6,2)} MB/s`};
+});
+
+CGEN.push(()=>{ // T4 tag bits
+  const ab=pick([16,20,24]),lp=pick([3,4,5]),lb=Math.pow(2,lp),linesP=pick([5,6,7,8]),lines=Math.pow(2,linesP);
+  const off=lp,lineB=linesP,tag=ab-off-lineB;
+  return{tk:'T4',ds:'T4: Address split \u2014 byte offset = log\u2082(block), line = log\u2082(lines), tag = rest.',
+    q:`Direct-mapped: ${ab}-bit address, ${lines} lines, ${lb} bytes/block.<br><br>Bits in <strong>tag field</strong>?`,
+    h:`Byte=log\u2082(${lb})=${off}, Line=log\u2082(${lines})=${lineB}, Tag=${ab}-${lineB}-${off}`,a:tag,u:'bits',
+    s:`Byte=${off}, Line=${lineB}, Tag=${tag}\nFormat: [${tag} Tag | ${lineB} Line | ${off} Byte]`};
+});
+
+CGEN.push(()=>{ // T4 which line
+  const off=pick([3,4]),lb=pick([4,5,6]),ab=off+lb+pick([4,5,6]);
+  let bits='';for(let i=0;i<ab;i++)bits+=pick([0,1]);
+  const grouped=bits.replace(/(.{4})/g,'$1 ').trim();
+  const lineField=bits.substr(ab-lb-off,lb),line=parseInt(lineField,2);
+  return{tk:'T4',ds:'T4: Extract the line field (middle bits) from the binary address, convert to decimal.',
+    q:`Direct-mapped, layout [tag ${ab-lb-off} | line ${lb} | byte ${off}].<br>Address: <code>${grouped}</code><br><br>Which <strong>cache line</strong>?`,
+    h:`Drop last ${off} byte bits and first ${ab-lb-off} tag bits. Middle ${lb} bits = line.`,a:line,u:'',
+    s:`Binary: ${bits}\nLine field (${lb} bits) = ${lineField}\u2082 = ${line}\n\u2192 Cache line ${line}`};
+});
+
+CGEN.push(()=>{ // T4 set-assoc sets
+  const cap=pick([32,64,128,256]),lb=pick([32,64,128]),ways=pick([2,4,8]);
+  const lines=(cap*1024)/lb,sets=lines/ways;
+  return{tk:'T4',ds:'T4: Total lines = cache size / line size. Sets = total lines / ways.',
+    q:`${cap}KB cache, ${lb}B/line, ${ways}-way, 32-bit addresses. <strong>Number of sets</strong>?`,
+    h:`Total lines = ${cap}\u00d71024/${lb}. Sets = total/${ways}.`,a:sets,u:'sets',
+    s:`Total lines = ${cap}\u00d71024/${lb} = ${lines}\nSets = ${lines}/${ways} = ${sets}`};
+});
+
+CGEN.push(()=>{ // T4 AMAT
+  const tc=round(pick([15,20,25])/10,1),H=round(pick([90,95,97])/100,2);
+  const fw=pick([40,50,60]),wa=pick([4,5]),lbz=pick([32,64]),words=lbz/4;
+  const tmain=fw+(words-1)*wa,tmiss=tc+tmain,avg=round(H*tc+(1-H)*tmiss,3);
+  return{tk:'T4',ds:'T4: When cache re-executes after fetch \u2192 T_miss = T_cache + T_main.',
+    q:`T_cache=${tc}ns, H=${H}, Main: first 4B=${fw}ns, +${wa}ns/word, line=${lbz}B. Re-executes after fetch.<br><br><strong>T_avg</strong> in ns?`,
+    h:`${lbz}B=${words} words. T_main=${fw}+${words-1}\u00d7${wa}. T_miss=${tc}+T_main.`,a:avg,u:'ns',
+    s:`${words} words\nT_main = ${fw}+${words-1}\u00d7${wa} = ${tmain} ns\nT_miss = ${tc}+${tmain} = ${tmiss} ns\nT_avg = ${H}\u00d7${tc}+${round(1-H,2)}\u00d7${tmiss} = ${avg} ns`};
+});
+
+CGEN.push(()=>{ // T5 hamming check bit
+  const bits=[];for(let i=0;i<8;i++)bits.push(pick([0,1]));
+  const dataStr=bits.join(''),dp=[3,5,6,7,9,10,11,12],pos={};
+  dp.forEach((p,i)=>pos[p]=bits[i]);
+  const parity=(cb)=>{let x=0;for(let p=1;p<=12;p++){if(p===cb)continue;if((p&cb)===cb&&pos[p]!==undefined)x^=pos[p];}return x;};
+  const which=pick([1,2,4,8]),val=parity(which);
+  const covers={1:'1,3,5,7,9,11',2:'2,3,6,7,10,11',4:'4,5,6,7,12',8:'8,9,10,11,12'};
+  return{tk:'T5',ds:'T5: Each parity bit = XOR (even parity) of data bits at the positions it covers.',
+    q:`Data word <code>${dataStr}</code> placed at Hamming positions 3,5,6,7,9,10,11,12.<br><br>What is the value of <strong>P${which}</strong> (covers positions ${covers[which]})?`,
+    h:`XOR the data bits sitting at positions ${covers[which]} (skip the parity position itself).`,a:val,u:'',
+    s:`Data at positions: 3=${pos[3]},5=${pos[5]},6=${pos[6]},7=${pos[7]},9=${pos[9]},10=${pos[10]},11=${pos[11]},12=${pos[12]}\nP${which} = XOR of data bits at {${covers[which]}} = ${val}`};
+});
+
+CGEN.push(()=>{ // T6 avg seek
+  const tracks=pick([20000,25000,30000,40000]),per100=round(pick([8,10,12,15])/10,1);
+  const max=(tracks/100)*per100,avg=round(max/3,2);
+  return{tk:'T6',ds:'T6: Avg seek = max/3. Max from "X ms per 100 tracks".',
+    q:`${tracks.toLocaleString()} tracks, seek=${per100}ms/100 tracks. <strong>Avg seek time</strong> in ms?`,
+    h:`Max = ${tracks}/100\u00d7${per100}ms. Avg = max/3.`,a:avg,u:'ms',
+    s:`Max = ${tracks}/100\u00d7${per100} = ${round(max,1)}ms\nAvg = ${round(max,1)}/3 = ${avg}ms`};
+});
+
+CGEN.push(()=>{ // T6 rotational latency
+  const rpm=pick([5400,7200,10000,15000]),rev=round((60/rpm)*1000,2),lat=round(rev/2,2);
+  return{tk:'T6',ds:'T6: Avg latency = half a revolution. 1 rev = (60/RPM)\u00d71000 ms.',
+    q:`${rpm} RPM. <strong>Avg rotational latency</strong> in ms?`,
+    h:`1 rev = (60/${rpm})\u00d71000. Avg = half.`,a:lat,u:'ms',
+    s:`1 rev = 60000/${rpm} = ${rev}ms\nAvg = ${rev}/2 = ${lat}ms`};
+});
+
+CGEN.push(()=>{ // T6 transfer time
+  const rpm=pick([5400,7200,10000]),sec=pick([400,500,600,800]),rev=(60/rpm)*1000,tr=round(rev/sec,4);
+  return{tk:'T6',ds:'T6: Transfer per sector = revolution time / sectors per track.',
+    q:`${rpm} RPM, ${sec} sectors/track. <strong>Transfer time</strong> per sector in ms?`,
+    h:`(1/${sec})\u00d7(60/${rpm})\u00d71000`,a:tr,u:'ms',
+    s:`1 rev = ${round(rev,2)}ms\nTransfer = ${round(rev,2)}/${sec} = ${tr}ms`};
+});
+
+CGEN.push(()=>{ // T6 disk capacity
+  const surf=pick([8,12,16,24]),tr=pick([256,512,1024]),sec=pick([32,64,128]),sk=pick([1,2,4]);
+  const capMB=round((surf*tr*sec*sk)/1024,1);
+  return{tk:'T6',ds:'T6: Capacity = Surfaces \u00d7 Tracks \u00d7 Sectors \u00d7 Sector size.',
+    q:`${surf} surfaces, ${tr} tracks/surface, ${sec} sectors/track, ${sk}KB/sector. <strong>Disk capacity</strong> in MB?`,
+    h:`${surf}\u00d7${tr}\u00d7${sec}\u00d7${sk}KB, then \u00f71024 for MB`,a:capMB,u:'MB',
+    s:`= ${surf}\u00d7${tr}\u00d7${sec}\u00d7${sk}KB = ${(surf*tr*sec*sk).toLocaleString()}KB = ${capMB} MB`};
+});
+
+CGEN.push(()=>{ // T6 RAID capacity
+  const drives=pick([4,5,6,8]),sz=pick([300,500,1000]),lvl=pick(['0','1','5','6']);
+  const cap={'0':drives*sz,'1':Math.floor(drives/2)*sz,'5':(drives-1)*sz,'6':(drives-2)*sz}[lvl];
+  const expl={'0':'N\u00d7cap (no redundancy)','1':`\u230a${drives}/2\u230b\u00d7${sz} mirrored pairs`,'5':'(N\u22121)\u00d7cap, 1 parity drive','6':'(N\u22122)\u00d7cap, dual parity'}[lvl];
+  return{tk:'T6',ds:'T6: RAID 0=N\u00d7. RAID 1=\u230aN/2\u230b\u00d7. RAID 3/4/5=(N\u22121)\u00d7. RAID 6=(N\u22122)\u00d7.',
+    q:`${drives} drives \u00d7 ${sz}GB. <strong>RAID ${lvl}</strong> usable capacity?`,
+    h:expl,a:cap,u:'GB',
+    s:`RAID ${lvl}: ${expl} = ${cap} GB`+(lvl==='1'&&drives%2?`\nTrap: odd drives \u2192 floor(${drives}/2)=${Math.floor(drives/2)} pairs, NOT ${drives}/2\u00d7${sz}.`:'')};
+});
+
+CGEN.push(()=>{ // T8 shift -> decimal (match reference: AL = LL)
+  let bits='';for(let i=0;i<8;i++)bits+=pick([0,1]);
+  if(pick([0,1]))bits='1'+bits.slice(1);
+  const n=pick([2,3,4]),type=pick(['lr','ll','ar','al','rr','rl']);
+  const arr=bits.split('').map(Number),msb=arr[0];
+  let r,name,rule;
+  switch(type){
+    case'lr':r=[...Array(n).fill(0),...arr.slice(0,8-n)];name='Logical Right';rule='fill 0 from left';break;
+    case'll':r=[...arr.slice(n),...Array(n).fill(0)];name='Logical Left';rule='fill 0 from right';break;
+    case'ar':r=[...Array(n).fill(msb),...arr.slice(0,8-n)];name='Arithmetic Right';rule=`fill MSB=${msb} from left`;break;
+    case'al':r=[...arr.slice(n),...Array(n).fill(0)];name='Arithmetic Left';rule='same as logical left';break;
+    case'rr':r=[...arr.slice(8-n),...arr.slice(0,8-n)];name='Right Rotate';rule='right bits wrap to left';break;
+    case'rl':r=[...arr.slice(n),...arr.slice(0,n)];name='Left Rotate';rule='left bits wrap to right';break;
+  }
+  const dec=parseInt(r.join(''),2);
+  return{tk:'T8',ds:`T8: ${name} \u2014 ${rule}.`,
+    q:`<code>${bits}</code> \u2192 <strong>${name} (${n} bits)</strong>. Decimal value of result?`,
+    h:`Apply ${name} by ${n}: ${rule}.`,a:dec,u:'(decimal)',
+    s:`${bits} \u2192 ${r.join('')}\n= ${dec} (decimal)`};
+});
+
+CGEN.push(()=>{ // T10 pipeline time units (k+N-1)
+  const k=pick([4,5,6,8]),N=pick([200,400,600,800,1000]),tp=k+N-1;
+  return{tk:'T10',ds:'T10: Pipelined time = (k + N \u2212 1) time units. k to fill, N\u22121 to drain.',
+    q:`${k}-stage pipeline. <strong>Time units</strong> to run ${N} instructions (ideal, no stalls)?`,
+    h:'T = (k + N \u2212 1)',a:tp,u:'time units',
+    s:`T_pipelined = (${k}+${N}\u22121) = ${tp}\nT_unpiped = ${N}\u00d7${k} = ${N*k}\nSpeedup = ${N*k}/${tp} = ${round(N*k/tp,2)}\u00d7`};
+});
+
+CGEN.push(()=>{ // T10 cycle time
+  const u=pick([8,10,12]),latch=round(pick([3,5,8])/10,1),k=pick([2,4,8,16]);
+  const cy=round(u/k+latch,3);
+  return{tk:'T10',ds:'T10: Pipeline cycle = (unpipelined / stages) + latch overhead.',
+    q:`Unpipelined=${u}ns, latch=${latch}ns. <strong>Cycle time</strong> for ${k}-stage pipeline?`,
+    h:`${u}/${k}+${latch}`,a:cy,u:'ns',
+    s:`Cycle = ${u}/${k}+${latch} = ${round(u/k,3)}+${latch} = ${cy}ns`};
+});
+
+CGEN.push(()=>{ // T10 latency
+  const u=pick([8,10,12]),latch=round(pick([3,5])/10,1),k=pick([4,8,16]);
+  const cy=u/k+latch,lat=round(cy*k,2);
+  return{tk:'T10',ds:'T10: Latency (one instruction) = k \u00d7 pipeline cycle time.',
+    q:`${k}-stage pipeline, unpipelined=${u}ns, latch=${latch}ns. <strong>Latency</strong> for one instruction?`,
+    h:`Cycle=${u}/${k}+${latch}. Latency = k\u00d7cycle.`,a:lat,u:'ns',
+    s:`Cycle = ${u}/${k}+${latch} = ${round(cy,3)}ns\nLatency = ${k}\u00d7${round(cy,3)} = ${lat}ns\nMore stages \u2192 higher latency but higher throughput.`};
+});
+
+CGEN.push(()=>{ // T10 speedup ratio
+  const k=pick([4,5,6,8]),N=pick([300,500,600,1000]),tp=k+N-1,tu=N*k,sp=round(tu/tp,2);
+  return{tk:'T10',ds:'T10: Speedup = T_unpipelined / T_pipelined. Approaches k as N grows.',
+    q:`${k}-stage pipeline, ${N} instructions. <strong>Speedup</strong> vs unpipelined?`,
+    h:`T_unpiped=${N}\u00d7${k}, T_piped=${k}+${N}\u22121.`,a:sp,u:'x',
+    s:`T_unpiped = ${N}\u00d7${k} = ${tu}\nT_piped = ${k}+${N}\u22121 = ${tp}\nSpeedup = ${tu}/${tp} = ${sp}\u00d7 (\u2192 ${k}\u00d7 as N\u2192\u221e)`};
+});
+
+CGEN.push(()=>{ // T10 2-stage small N
+  const N=pick([4,5,6,8]),tp=2+N-1,tu=N*2,sp=round(tu/tp,2);
+  return{tk:'T10',ds:'T10: Tutorial Q4 \u2014 2-stage pipeline (fetch+execute), 1 unit/stage.',
+    q:`2-stage pipeline (Fetch+Execute), 1 unit/stage. <strong>Time units</strong> for ${N} instructions?`,
+    h:'T = (k+N\u22121) = (2+N\u22121)',a:tp,u:'time units',
+    s:`T_piped = (2+${N}\u22121) = ${tp}\nT_unpiped = ${N}\u00d72 = ${tu}\nSpeedup = ${tu}/${tp} = ${sp}\u00d7`};
+});
+
+CGEN.push(()=>{ // T10 instructions completed after C cycles
+  const k=pick([4,5,6,8]),c=k+pick([2,5,8,12]),done=c-k+1;
+  return{tk:'T10',ds:'T10: After C cycles, completed = C \u2212 k + 1 (first instruction exits at cycle k).',
+    q:`${k}-stage pipeline, continuously fed, no stalls. After <strong>${c} cycles</strong>, how many instructions have fully completed?`,
+    h:`First completes at cycle ${k}, then 1/cycle. Completed = ${c}\u2212${k}+1.`,a:done,u:'instructions',
+    s:`Completed by cycle ${c} = ${c} \u2212 ${k} + 1 = ${done}`};
+});
+
+CGEN.push(()=>{ // T10 effective CPI with branch mispredict
+  const bp=pick([10,12,15,20]),mp=pick([20,30,40]),pen=pick([2,3,4]);
+  const stall=round((bp/100)*(mp/100)*pen,3),cpi=round(1+stall,3);
+  return{tk:'T10',ds:'T10: Effective CPI = 1 + (branch%)\u00d7(mispredict%)\u00d7penalty.',
+    q:`Pipelined CPU, ideal CPI=1. ${bp}% of instructions are branches; ${mp}% of those mispredict, each costing ${pen} stall cycles. <strong>Effective CPI</strong>?`,
+    h:`Stalls/instr = ${bp/100}\u00d7${mp/100}\u00d7${pen}. CPI = 1 + that.`,a:cpi,u:'',
+    s:`Stall cycles/instr = ${bp/100}\u00d7${mp/100}\u00d7${pen} = ${stall}\nEffective CPI = 1 + ${stall} = ${cpi}`};
+});
+
+CGEN.push(()=>{ // T10 unpipelined total time
+  const k=pick([4,5,6,8]),N=pick([100,200,400,600]),cyc=pick([1,2]);
+  const tu=N*k*cyc;
+  return{tk:'T10',ds:'T10: Unpipelined time = N \u00d7 k \u00d7 cycle (each instruction does all k stages sequentially).',
+    q:`Non-pipelined CPU, ${k} stages each ${cyc} time unit, ${N} instructions. <strong>Total time</strong> (unpipelined)?`,
+    h:`Every instruction takes all ${k} stages: N\u00d7k\u00d7cycle.`,a:tu,u:'time units',
+    s:`T_unpipelined = ${N}\u00d7${k}\u00d7${cyc} = ${tu} time units\nPipelined would be only (${k}+${N}\u22121)\u00d7${cyc} = ${(k+N-1)*cyc}.`};
+});
+CGEN.push(()=>{ // T10 max theoretical speedup = k
+  const k=pick([4,5,6,8,10]);
+  return{tk:'T10',ds:'T10: As N\u2192\u221e, speedup approaches the number of stages k (the ideal ceiling).',
+    q:`A ${k}-stage pipeline runs a very large number of instructions. What is its <strong>maximum theoretical speedup</strong>?`,
+    h:'Speedup \u2192 k as N \u2192 \u221e.',a:k,u:'x',
+    s:`Speedup = N\u00d7k/(k+N\u22121). As N\u2192\u221e this \u2192 k = ${k}\u00d7.\nReal speedup is always slightly below k due to fill/drain overhead.`};
+});
+CGEN.push(()=>{ // T10 cycles lost to flushes
+  const k=pick([5,6,8]),br=pick([4,6,8,10]),pen=k-1;
+  const lost=br*pen;
+  return{tk:'T10',ds:'T10: A flushed branch wastes (k\u22121) cycles (the partially-filled pipeline).',
+    q:`${k}-stage pipeline. ${br} branches are taken and each forces a full flush (penalty = k\u22121 cycles). <strong>Total cycles lost</strong> to flushing?`,
+    h:`Penalty per flush = ${k}\u22121 = ${pen}. Total = ${br}\u00d7${pen}.`,a:lost,u:'cycles',
+    s:`Penalty per taken branch = k\u22121 = ${pen} cycles\nTotal lost = ${br}\u00d7${pen} = ${lost} cycles`};
+});
+CGEN.push(()=>{ // T10 stall cycles inserted for data hazards
+  const haz=pick([3,4,5,6]),stall=pick([1,2]);
+  const tot=haz*stall;
+  return{tk:'T10',ds:'T10: Each unresolved data hazard (no forwarding) inserts stall (bubble) cycles.',
+    q:`Without forwarding, a code segment has ${haz} data hazards, each needing ${stall} stall cycle(s). <strong>Total stall cycles</strong> added?`,
+    h:`${haz} hazards \u00d7 ${stall} stall each.`,a:tot,u:'cycles',
+    s:`Total stalls = ${haz}\u00d7${stall} = ${tot} cycles\nForwarding (bypassing) could remove most of these.`};
+});
+
+/* --- T9 (NOT in final) numeric generators, kept & labelled --- */
+CGEN.push(()=>{ // T9 Amdahl effective MIPS
+  const x=pick([6,8,10]),n=pick([8,16]),a=round(pick([70,80,90,95])/100,2);
+  const e=round(x/((1-a)+a/n),2);
+  return{tk:'T9',ds:'T9: Amdahl \u2014 MIPS_eff = x / ((1\u2212\u03b1)+\u03b1/n).',
+    q:`n=${n} processors, x=${x} MIPS/proc, \u03b1=${a}. <strong>Effective MIPS</strong>?`,
+    h:`${x}/((1\u2212${a})+${a}/${n})`,a:e,u:'MIPS',
+    s:`= ${x}/(${round(1-a,2)}+${round(a/n,4)}) = ${x}/${round((1-a)+a/n,4)} = ${e} MIPS`};
+});
+CGEN.push(()=>{ // T9 task distribution speedup
+  const base=pick([1000,2000]),tasks=[base,base*2,base*3,base*4,base*5],procs=pick([2,3,4]);
+  const sorted=tasks.slice().sort((a,b)=>b-a),bins=new Array(procs).fill(0);
+  sorted.forEach(t=>{const i=bins.indexOf(Math.min(...bins));bins[i]+=t;});
+  const mk=Math.max(...bins),ser=tasks.reduce((a,b)=>a+b,0),sp=round(ser/mk,2);
+  return{tk:'T9',ds:'T9: T_parallel = slowest processor (bottleneck), not the average. Assign biggest first.',
+    q:`Tasks: ${tasks.map(t=>t.toLocaleString()).join(', ')} cycles. ${procs} processors. <strong>Speedup</strong>?`,
+    h:`Serial=sum=${ser}. Greedy assign biggest first. Parallel=max load.`,a:sp,u:'x',
+    s:`T_serial = ${ser.toLocaleString()}\nBest load per processor: [${bins.map(b=>b.toLocaleString()).join(', ')}]\nT_parallel = ${mk.toLocaleString()}\nSpeedup = ${ser.toLocaleString()}/${mk.toLocaleString()} = ${sp}\u00d7`};
+});
+
+/* =========================================================================
+   MCQ GENERATORS  (conceptual + applied; options shuffled)
+   each returns {tk, q, opts, c, e}
+   ========================================================================= */
+const MGEN=[];
+
+MGEN.push(()=>{ // T4 address order
+  const{opts,c}=buildOpts('Tag | Line | Byte offset',['Byte | Line | Tag','Line | Tag | Byte','Tag | Byte | Line']);
+  return{tk:'T4',q:'Correct address field order in a direct-mapped cache (MSB \u2192 LSB)?',opts,c,
+    e:'Always [Tag | Line | Byte] from MSB to LSB. Byte offset is least significant (selects within block); tag is most significant (identifies which memory block is loaded).'};
+});
+MGEN.push(()=>{ // T4 set-assoc sets MCQ
+  const cap=pick([32,64,128]),lb=pick([32,64,128]),ways=pick([2,4,8]);
+  const lines=(cap*1024)/lb,sets=lines/ways;
+  const{opts,c}=buildOpts(`${sets} sets`,[`${lines} sets`,`${sets*ways} sets`,`${sets/2} sets`]);
+  return{tk:'T4',q:`A ${cap}KB cache, ${lb}B/line, ${ways}-way set-associative. How many sets?`,opts,c,
+    e:`Total lines = ${cap}\u00d71024/${lb} = ${lines}. Sets = lines/ways = ${lines}/${ways} = ${sets}.`};
+});
+MGEN.push(()=>{ // T8 shift type MCQ
+  let bits='';for(let i=0;i<8;i++)bits+=pick([0,1]);if(pick([0,1]))bits='1'+bits.slice(1);
+  const n=pick([2,3,4]),arr=bits.split('').map(Number),msb=arr[0];
+  const ops={
+    'Logical Right':[...Array(n).fill(0),...arr.slice(0,8-n)],
+    'Logical Left':[...arr.slice(n),...Array(n).fill(0)],
+    'Arithmetic Right':[...Array(n).fill(msb),...arr.slice(0,8-n)],
+    'Right Rotate':[...arr.slice(8-n),...arr.slice(0,8-n)],
+    'Left Rotate':[...arr.slice(n),...arr.slice(0,n)]
+  };
+  const chosen=pick(Object.keys(ops)),correct=ops[chosen].join('');
+  let distract=Object.entries(ops).filter(([k,v])=>k!==chosen&&v.join('')!==correct).map(([k,v])=>v.join(''));
+  distract=[...new Set(distract)];distract=shuf(distract).slice(0,3);
+  const{opts,c}=buildOpts(correct,distract);
+  return{tk:'T8',q:`<code>${bits}</code> after <strong>${chosen} (${n} bits)</strong> gives which result?`,opts,c,
+    e:`${chosen} by ${n}: ${bits} \u2192 ${correct}. Logical fills 0; arithmetic-right copies the MSB (sign); rotate wraps bits around.`};
+});
+MGEN.push(()=>{ // T6 RAID level fault tolerance / capacity MCQ
+  const drives=pick([4,5,6]),sz=pick([300,500]);
+  const lvl=pick(['0','1','5','6']),cap={'0':drives*sz,'1':Math.floor(drives/2)*sz,'5':(drives-1)*sz,'6':(drives-2)*sz}[lvl];
+  const all=[drives*sz,Math.floor(drives/2)*sz,(drives-1)*sz,(drives-2)*sz].map(v=>`${v} GB`);
+  let distract=[...new Set(all)].filter(v=>v!==`${cap} GB`);distract=shuf(distract).slice(0,3);
+  const{opts,c}=buildOpts(`${cap} GB`,distract);
+  return{tk:'T6',q:`${drives} drives \u00d7 ${sz}GB in <strong>RAID ${lvl}</strong>. Usable capacity?`,opts,c,
+    e:`RAID 0=N\u00d7, 1=\u230aN/2\u230b\u00d7, 3/4/5=(N\u22121)\u00d7, 6=(N\u22122)\u00d7 the drive size. For RAID ${lvl} with ${drives} drives: ${cap} GB.`};
+});
+MGEN.push(()=>{ // T2 superscalar judgement MCQ
+  const clk=pick([100,150,200]),icM=pick([10,12]),t=round(pick([10,15,30])/100,2);
+  const cpi=round((clk*1e6*t)/(icM*1e6),2),sup=cpi<1;
+  const{opts,c}=buildOpts(sup?'Yes \u2014 CPI < 1 means >1 instruction completes per cycle':'No \u2014 CPI \u2265 1, no evidence of superscalar',
+    [sup?'No \u2014 CPI \u2265 1':'Yes \u2014 CPI < 1','Cannot tell without the cache hit ratio','Only if it is a RISC machine']);
+  return{tk:'T2',q:`${clk} MHz CPU runs ${icM}M instructions in ${t}s (CPI=${cpi}). Is it likely superscalar?`,opts,c,
+    e:`CPI = (clock\u00d7time)/IC = ${cpi}. A CPI below 1 means more than one instruction completes per cycle \u2014 only possible with multiple-issue (superscalar) hardware. Here CPI ${sup?'< 1 \u2192 likely superscalar.':'\u2265 1 \u2192 not superscalar.'}`};
+});
+
+/* =========================================================================
+   STATIC CURATED MCQ BANK (exam-accurate, kept verbatim from tutorials)
+   ========================================================================= */
+const MQ_STATIC=[
+  {tk:'T1',q:'Difference between Computer Architecture and Computer Organization?',opts:['Architecture=programmer view (ISA, registers); Organization=physical implementation','They are identical','Architecture=hardware; Organization=software','Organization=programmer view; Architecture=physical'],c:0,e:'Architecture: what programmers see and use \u2014 ISA, registers, addressing modes. Organization: hidden physical implementation \u2014 how the control unit is built, how buses are wired.'},
+  {tk:'T1',q:'What are the 4 main functions of a computer?',opts:['Data Processing, Data Storage, Data Movement, Control','Calculate, Print, Store, Display','Input, Output, Process, Store','Fetch, Decode, Execute, Write-back'],c:0,e:'(1) Data Processing, (2) Data Storage, (3) Data Movement, (4) Control. ALL 4 occur in general-purpose programs.'},
+  {tk:'T2',q:'A processor has CPI = 0.7. What does this indicate?',opts:['Broken \u2014 CPI cannot be below 1','Superscalar \u2014 executes more than 1 instruction per clock cycle','RISC architecture','70% efficiency'],c:1,e:'CPI < 1 means more than 1 instruction completes per cycle on average. Only possible in a superscalar architecture with multiple parallel execution units.'},
+  {tk:'T2',q:'Upgrading P from 50MHz to 75MHz only dropped execution time from 250s to 220s (not 167s). Why?',opts:["P' has defects",'Memory/bus became the bottleneck after the clock upgrade','OS overhead increased','Program has bugs'],c:1,e:'A 50% faster clock gives an ideal 1.5\u00d7 speedup (250s\u2192167s). Getting only 220s means memory/bus access time did not improve with the clock, capping the real-world gain.'},
+  {tk:'T2',q:'Why is execution time more reliable than MIPS for comparing different architectures?',opts:['Execution time is always smaller','MIPS ignores differing instruction-set complexity and compiler instruction counts; execution time measures the actual time a task takes','MIPS only applies to RISC','Execution time cannot be measured'],c:1,e:'Different ISAs need different instruction counts for the same task, so higher MIPS doesn\u2019t guarantee less time. Execution time measures the bottom line directly.'},
+  {tk:'T3',q:'Question says "32-bit data bus." What value goes into the Transfer Rate formula?',opts:['32','4 (32\u00f78=4 bytes)','8','16'],c:1,e:'Transfer rate uses bus width in BYTES. 32 bits \u00f7 8 = 4 bytes. Most common T3 mistake: plugging in 32 and getting an answer 8\u00d7 too large.'},
+  {tk:'T3',q:'Main advantage of an asynchronous bus over a synchronous one?',opts:['Always faster','Devices at different speeds can communicate \u2014 no shared clock needed','Less power','Higher bandwidth'],c:1,e:'Asynchronous uses handshaking instead of a shared clock, so fast and slow devices can communicate \u2014 each waits for the other\u2019s signal. Synchronous ties everything to one clock.'},
+  {tk:'T3',q:'Benefit of a multiple-bus architecture over a single shared bus?',opts:['Cheaper to build','Transfers can happen in parallel on different buses, reducing contention','Removes the need for arbitration','Makes the system synchronous'],c:1,e:'A single bus serializes all transfers and forces every module to contend for it. Multiple buses let transfers proceed in parallel, cutting the bottleneck.'},
+  {tk:'T4',q:'Cache re-executes after a miss. Which T_miss is correct?',opts:['T_miss = T_main only','T_miss = T_cache + T_main','T_miss = T_main / H','T_miss = T_cache \u00d7 T_main'],c:1,e:'When the cache waits for main memory then re-accesses the cache, penalty = T_cache + T_main. If it just waits without re-accessing, T_miss = T_main only. Read carefully.'},
+  {tk:'T4',q:'What does the LRU replacement policy do?',opts:['Replaces the oldest loaded line','Replaces the line not accessed for the longest time','Replaces a random line','Replaces the highest-address line'],c:1,e:'LRU (Least Recently Used) evicts the line accessed longest ago, exploiting temporal locality. Most effective policy but needs access-order tracking.'},
+  {tk:'T4',q:'Difference between write-through and write-back?',opts:['Write-through=cache only; write-back=both','Write-through=cache AND memory immediately; write-back=cache only, memory updated on eviction','Write-through is always faster','Identical'],c:1,e:'Write-through updates both cache and memory on every write (consistent, more traffic). Write-back updates cache only, writing to memory when the line is evicted (less traffic, needs dirty bits).'},
+  {tk:'T4',q:'Why is full associative mapping better at avoiding conflict misses than direct mapping?',opts:['It needs no tags','Any block can go in any line, so blocks that share a line index in direct mapping no longer collide','It is cheaper','It needs no replacement policy'],c:1,e:'Direct mapping forces blocks with the same line field to compete for one line. Full associativity lets any block use any line, removing those conflicts \u2014 at the cost of comparing every tag in parallel.'},
+  {tk:'T5',q:'Why does DRAM need refresh but SRAM does not?',opts:['DRAM capacitors leak charge over time; SRAM flip-flops hold state while powered','DRAM is older','SRAM refreshes itself','DRAM has more bits'],c:0,e:'DRAM stores bits as charge in capacitors that leak \u2014 lost without periodic refresh. SRAM uses 6-transistor flip-flops that actively hold state while powered.'},
+  {tk:'T5',q:'Why can DRAM store far more bits per chip than SRAM?',opts:['Better manufacturing','1 DRAM bit = 1 transistor + 1 capacitor vs 6 transistors for SRAM','Lower voltage','More error checking'],c:1,e:'DRAM: 1 bit = 1T+1C. SRAM: 1 bit = 6T. Same silicon area packs ~6\u00d7 more DRAM bits \u2014 why main memory is GB while cache stays MB.'},
+  {tk:'T5',q:'What does the "S" in SDRAM stand for?',opts:['Static','Synchronous \u2014 synced to system clock for pipelined transfers','Serial','Shared'],c:1,e:'S = Synchronous. SDRAM syncs to the system clock, allowing pipelined/burst requests \u2014 significantly better throughput than asynchronous DRAM.'},
+  {tk:'T5',q:'How is EEPROM erased compared to EPROM?',opts:['EEPROM uses UV light; EPROM uses electricity','EPROM needs UV light and erases the whole chip; EEPROM erases electrically in-circuit, byte by byte','Neither can be erased','They erase identically'],c:1,e:'EPROM is removed and erased under UV light, all at once. EEPROM erases electrically while installed, typically byte by byte \u2014 far more practical for updates.'},
+  {tk:'T6',q:'Which RAID level has zero fault tolerance?',opts:['RAID 1','RAID 5','RAID 0','RAID 6'],c:2,e:'RAID 0 (striping) splits data across all drives with no redundancy. If any drive fails, all data is lost.'},
+  {tk:'T6',q:'RAID 1 with 5 drives \u00d7 300GB. Usable capacity?',opts:['1500 GB','750 GB','600 GB','1200 GB'],c:2,e:'RAID 1 mirrors in pairs: floor(5/2)=2 pairs \u2192 2\u00d7300=600 GB. Trap: NOT 750 GB \u2014 the 5th drive has no mirror partner.'},
+  {tk:'T6',q:'Why is average seek time (1/3)\u00d7max, not (1/2)\u00d7max?',opts:['Manufacturer convention','It is a probability result: expected absolute difference between two uniform random track positions = 1/3 of the maximum','Head starts in the middle','The formula is wrong'],c:1,e:'Pure mathematics: for two uniformly random positions, the expected absolute difference equals 1/3 of the maximum range. Not a convention.'},
+  {tk:'T6',q:'Why can same-cylinder disk accesses skip the seek step?',opts:['They cannot','Tracks in one cylinder are reachable by electronic head selection across surfaces \u2014 no arm movement (seek) needed','Cylinders only matter for SSDs','The data is cached'],c:1,e:'A cylinder is all tracks at one radial position across platters. Switching the active head electronically is far faster than moving the arm, so successive same-cylinder accesses avoid seek time.'},
+  {tk:'T7',q:'What does DMA do while it holds the bus?',opts:['CPU fully halts','CPU can still run instructions not needing the bus (cycle stealing)','CPU only handles interrupts','CPU sleeps'],c:1,e:'DMA uses cycle stealing: it takes the bus only when transferring. The CPU keeps running register/cache instructions in between \u2014 briefly paused only for bus steals.'},
+  {tk:'T7',q:'Difference between memory-mapped I/O and isolated I/O?',opts:['Memory-mapped is faster','Memory-mapped: devices share the memory address space (use LOAD/STORE). Isolated: separate I/O space, needs special IN/OUT instructions','Memory-mapped uses DMA','Identical'],c:1,e:'Memory-mapped I/O makes device registers look like memory, usable with ordinary LOAD/STORE. Isolated (port-mapped) I/O uses a separate address space and dedicated IN/OUT instructions.'},
+  {tk:'T8',q:'Key difference: arithmetic right shift vs logical right shift?',opts:['No difference','Arithmetic right fills with the MSB (sign bit); logical right always fills with 0','Arithmetic is faster','Logical preserves more data'],c:1,e:'Logical right always fills 0. Arithmetic right copies the MSB (sign) into vacated bits, preserving sign for two\u2019s-complement numbers (= integer divide by 2).'},
+  {tk:'T8',q:'Why are JUMP/BRANCH instructions necessary?',opts:['They are not','Without them programs run purely sequentially \u2014 no loops, conditionals, or function calls','Only in high-level languages','Only for I/O'],c:1,e:'Without transfer of control, a CPU executes in strict sequence forever \u2014 no decisions, loops, or reusable functions. JUMP/BRANCH are fundamental to any real program.'},
+  {tk:'T8',q:'Why does a one-address (accumulator) machine need more instructions than a three-address machine for the same expression?',opts:['It runs at a slower clock','Every intermediate must pass through the single accumulator via explicit LOAD/STORE','It cannot do arithmetic','Its instructions are physically longer'],c:1,e:'With only the accumulator to hold operands, each intermediate result needs an explicit LOAD/STORE shuffle. Three-address machines name both operands and a separate destination, cutting instruction count.'},
+  {tk:'T9',q:'What are the 4 MESI cache coherence states?',opts:['Modified, Exclusive, Shared, Invalid','Mapped, Evicted, Synced, Invalid','Modified, Empty, Shared, Invalid','Memory, Execute, Store, Input'],c:0,e:'Modified=dirty, only copy. Exclusive=clean, only copy. Shared=clean, multiple copies. Invalid=stale. Keeps multiprocessor caches consistent.'},
+  {tk:'T9',q:'Main characteristics of an SMP (Symmetric Multiprocessor)?',opts:['Each processor has private memory','All processors identical, share the same memory and OS equally, uniform memory access','One processor is master','Message passing only'],c:1,e:'SMP: 2+ identical processors sharing one main memory (UMA) and I/O, all running the same OS, which can schedule any process on any processor.'},
+  {tk:'T9',q:"Why can't doubling processors double effective MIPS (Amdahl)?",opts:['Hardware limits','The sequential fraction (1\u2212\u03b1) is a bottleneck no parallelism can remove','Processors interfere','MIPS is nonlinear'],c:1,e:"Amdahl's law: max speedup = 1/(1\u2212\u03b1). Even a small sequential portion caps speedup, giving diminishing returns from adding processors."},
+  {tk:'T10',q:'Why does pipelining improve performance?',opts:['Each instruction runs faster','Multiple instructions overlap \u2014 while one executes, the next is fetched, raising throughput','Less power','Fewer instructions'],c:1,e:'Pipelining doesn\u2019t speed up any single instruction; it overlaps stages so all stages stay busy, dramatically improving throughput.'},
+  {tk:'T10',q:'What is a data hazard in a pipeline?',opts:['Two instructions need the same functional unit','An instruction needs a register value before an earlier, still-in-flight instruction has written it','A branch mispredicts','The instruction cache misses'],c:1,e:'A (read-after-write) data hazard occurs when an instruction\u2019s operand depends on an earlier result not yet written back. Handled by stalling or forwarding.'},
+  {tk:'T10',q:'How does forwarding (bypassing) address data hazards?',opts:['By inserting stall cycles','By routing a result directly from the producing stage to the consuming stage before write-back','By reordering at compile time','By disabling the pipeline'],c:1,e:'Forwarding adds datapaths that feed a just-computed result straight to a later stage that needs it, often eliminating the stall that waiting for write-back would require.'},
+  {tk:'T10',q:'What does a control hazard stem from?',opts:['Resource contention','Not knowing the next instruction\u2019s address until a branch is resolved','A register write conflict','A cache miss'],c:1,e:'Control hazards come from branches: the pipeline doesn\u2019t know which instruction to fetch next until the branch condition and target are resolved, possibly several stages later.'},
+  {tk:'T10',q:'How does branch prediction handle control hazards?',opts:['Always stall until the branch resolves','Guess the outcome and speculatively fetch/execute, flushing if the guess is wrong','Remove branches at compile time','Run both paths on separate cores'],c:1,e:'Prediction speculatively continues down the predicted path. Correct \u2192 no cycles lost; wrong \u2192 flush the speculative instructions and restart, paying a misprediction penalty.'},
+  {tk:'T10',q:'Why does deeper pipelining give diminishing returns even ignoring hazards?',opts:['Cycle time stays identical','Fixed latch overhead per stage becomes a larger fraction of shrinking per-stage logic, so cycle time stops improving','Pipelines over 5 stages are impossible','More stages reduce latency'],c:1,e:'Splitting logic across more stages shrinks per-stage logic time, but latch overhead per stage is fixed and eventually dominates. Hazard penalties also grow with more in-flight stages.'},
+  {tk:'T10',q:'What are the EU and BIU in a pipelined processor?',opts:['Error Unit and Buffer Interface Unit','Execution Unit (executes) and Bus Interface Unit (prefetches instructions into a queue)','External Unit and Binary Interface Unit','Encode Unit and Broadcast Interface Unit'],c:1,e:'EU executes instructions; BIU independently prefetches upcoming instructions into a queue. Overlapping fetch and execute is the basic 2-stage pipeline idea.'},
+  {tk:'T10',q:'A load-use hazard often still needs a stall even with forwarding because:',opts:['Forwarding never works','A loaded value isn\u2019t ready until the memory stage \u2014 later than an ALU result \u2014 so the next instruction can\u2019t get it in time','Loads can\u2019t be followed by other instructions','Forwarding is only for floating point'],c:1,e:'A load\u2019s result appears only after the memory stage, typically too late for the immediately following instruction even with forwarding, so a one-cycle stall (or compiler reordering) is needed.'},
+];
+
+/* =========================================================================
+   STATIC CURATED CHALLENGES (exact tutorial/exam numbers, never change)
+   ========================================================================= */
+const CH_STATIC=[
+  {tk:'T2',ds:'T2: Tutorial 2 \u2014 the canonical instruction-mix question.',q:'80 MHz processor:<br>&bull; Integer 45,000\u00d71 &bull; Data 32,000\u00d72 &bull; Float 15,000\u00d72 &bull; Control 8,000\u00d72<br><br><strong>Total clock cycles</strong>?',h:'Multiply each \u00d7 CPI, sum.',a:155000,u:'cycles',s:'45000+64000+30000+16000 = 155,000 cycles'},
+  {tk:'T2',ds:'T2: CPI from the 155,000-cycle benchmark.',q:'155,000 cycles, 100,000 instructions. <strong>CPI</strong>?',h:'CPI = cycles/IC',a:1.55,u:'',s:'155,000/100,000 = 1.55'},
+  {tk:'T2',ds:'T2: MIPS for the same benchmark.',q:'CPI=1.55, clock=80 MHz. <strong>MIPS</strong>?',h:'MIPS = 80M/(1.55\u00d710\u2076)',a:51.6,u:'MIPS',s:'80/1.55 = 51.6 MIPS'},
+  {tk:'T3',ds:'T3: Tutorial 3 \u2014 the 16-bit external bus question.',q:'32-bit micro, <strong>16-bit external data bus</strong>, 16 MHz, 4-cycle bus cycle. <strong>Transfer rate</strong> bytes/s?',h:'16-bit=2 bytes. 2\u00d716M/4.',a:8000000,u:'bytes/s',s:'2 \u00d7 16,000,000 / 4 = 8,000,000 bytes/s = 8 MB/s'},
+  {tk:'T4',ds:'T4: Tutorial 4 \u2014 line lookup for address 0001000100011011.',q:'Direct-mapped 16-bit, 32 lines, 8 bytes/block. Address <code>0001 0001 0001 1011</code>. Which <strong>cache line</strong>?',h:'Line bits [7:3]=00011.',a:3,u:'',s:'Byte=011, Line=00011=3, Tag=00010001 \u2192 line 3'},
+  {tk:'T4',ds:'T4: Tutorial 4 \u2014 the 64KB 4-way set-associative cache.',q:'64KB cache, 128B/line, 4-way, 32-bit. <strong>Number of sets</strong>?',h:'512 lines / 4.',a:128,u:'sets',s:'Lines=512, Sets=512/4=128'},
+  {tk:'T5',ds:'T5: Tutorial 5 \u2014 Hamming for data word 11000010, find P1.',q:'Data <code>11000010</code> at positions 3,5,6,7,9,10,11,12. <strong>P1</strong> (covers 1,3,5,7,9,11)?',h:'XOR data at 3,5,7,9,11.',a:1,u:'',s:'P1 = XOR(1,1,0,0,1) = 1\nFull check bits: P1=1,P2=0,P4=1,P8=1'},
+  {tk:'T6',ds:'T6: Tutorial 6 \u2014 7200 RPM, 30,000 tracks avg seek.',q:'30,000 tracks, seek=1ms/100 tracks. <strong>Avg seek</strong> ms?',h:'Max=300, avg=max/3.',a:100,u:'ms',s:'Max=300ms, Avg=100ms'},
+  {tk:'T6',ds:'T6: Tutorial 6 \u2014 disk capacity 16\u00d7512\u00d764\u00d71KB.',q:'16 surfaces, 512 tracks, 64 sectors, 1KB/sector. <strong>Capacity</strong> MB?',h:'16\u00d7512\u00d764\u00d71KB \u00f71024.',a:512,u:'MB',s:'= 512 MB'},
+  {tk:'T8',ds:'T8: Tutorial 8 \u2014 arithmetic right shift of 10101110.',q:'<code>10101110</code> \u2192 <strong>Arithmetic Right (4)</strong>. Decimal?',h:'MSB=1 \u2192 fill 1s: 11111010.',a:250,u:'(decimal)',s:'11111010 = 250'},
+  {tk:'T10',ds:'T10: Tutorial 10 Q5 \u2014 6-stage pipeline, 600 instructions.',q:'6-stage pipeline. <strong>Time units</strong> for 600 instructions?',h:'(k+N\u22121).',a:605,u:'time units',s:'(6+600\u22121)=605. Unpiped=3600. Speedup\u22485.95\u00d7'},
+  {tk:'T10',ds:'T10: Tutorial 10 Q6 \u2014 4-stage pipeline cycle time.',q:'Unpipelined=10ns, latch=0.5ns. <strong>Cycle time</strong> for 4-stage?',h:'10/4+0.5.',a:3.0,u:'ns',s:'10/4+0.5 = 3.0 ns'},
+  {tk:'T9',ds:'T9: Tutorial 9 \u2014 solve \u03b1 for 54 MIPS. (NOT in final)',q:'16 processors, 6 MIPS each. <strong>\u03b1</strong> for 54 MIPS effective?',h:'54=6/((1\u2212\u03b1)+\u03b1/16).',a:0.948,u:'',s:'denom=6/54=1/9\n1\u2212\u03b1+\u03b1/16=1/9 \u2192 \u03b1\u22480.948'},
+];
+
+/* =========================================================================
+   APP STATE & ACTIVE SETS
+   ========================================================================= */
+const S={chC:0,chW:0,chSk:0,mqC:0,mqW:0,streak:0};
+let CH_ACTIVE=[],MQ_ACTIVE=[],chDone={},mqDone={};
+let chFilter='all',mqFilter='all';
+
+function buildSet(statics,gens,count,perGen){
+  let pool=statics.map(x=>({...x,id:uid()}));
+  let attempts=0;
+  while(pool.length<count&&attempts<count*8){
+    attempts++;
+    const g=pick(gens);let q;
+    try{q=g();}catch(e){continue;}
+    // pipeline emphasis: keep T10 even if it would overflow; lightly downweight repeats
+    q.id=uid();pool.push(q);
+  }
+  return shuf(pool).slice(0,count);
+}
+
+function regenCH(){
+  const count=parseInt(document.getElementById('ch-count').value);
+  CH_ACTIVE=buildSet(CH_STATIC,CGEN,count,2);
+  chDone={};S.chC=0;S.chW=0;S.chSk=0;
+  renderCHTabs();renCH();updS();
+  document.getElementById('ch-info').textContent=`${CH_ACTIVE.length} questions \u00b7 mostly random numbers`;
+}
+function regenMQ(){
+  const count=parseInt(document.getElementById('mq-count').value);
+  MQ_ACTIVE=buildSet(MQ_STATIC,MGEN,count,1);
+  mqDone={};S.mqC=0;S.mqW=0;
+  renderMQTabs();renMQ();updS();
+  document.getElementById('mq-info').textContent=`${MQ_ACTIVE.length} questions \u00b7 options shuffled`;
+}
+
+/* =========================================================================
+   RENDERERS
+   ========================================================================= */
+function visibleTopics(list){
+  const tks=[...new Set(list.map(x=>x.tk))];
+  return FOCUS?tks.filter(tk=>!nf(tk)):tks;
+}
+function topicBadge(tk){
+  const m=TM[tk];
+  return `<span class="bdg ${m.bg}">${m.label}</span>`+(m.inFinal?'':' <span class="bnf">Not in final</span>');
+}
+
+function renderCHTabs(){
+  const tks=[...new Set(CH_ACTIVE.map(c=>c.tk))].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
+  const el=document.getElementById('chtabs');
+  el.innerHTML=`<button class="ttab${chFilter==='all'?' active':''}" onclick="filCH('all',this)">All</button>`+
+    tks.map(tk=>`<button class="ttab${nf(tk)?' nf':''}${chFilter===tk?' active':''}" onclick="filCH('${tk}',this)">${TM[tk].label.split(' \u00b7 ')[0]}</button>`).join('');
+}
+function filCH(t,b){chFilter=t;document.querySelectorAll('#chtabs .ttab').forEach(x=>x.classList.remove('active'));b.classList.add('active');renCH();}
+function renCH(){
+  const el=document.getElementById('chcon');el.innerHTML='';
+  let shown=0;
+  CH_ACTIVE.forEach((ch,idx)=>{
+    if(FOCUS&&nf(ch.tk))return;
+    if(chFilter!=='all'&&ch.tk!==chFilter)return;
+    shown++;
+    const done=chDone[ch.id];
+    const d=document.createElement('div');d.className='qcard'+(nf(ch.tk)?' nfq':'');d.id='chq-'+ch.id;
+    d.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+      <span class="qn">Q${shown}</span>${topicBadge(ch.tk)}
+      ${done?'<span class="bdg bg" style="margin-left:auto">'+(done.ok?'Solved':'Seen')+'</span>':''}
+    </div>
+    <div class="qdesc">${ch.ds}</div>
+    <div class="qt">${ch.q}</div>
+    ${!done?`
+      <div class="qh" id="chh-${ch.id}">Hint: ${ch.h}</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input class="ai" id="cha-${ch.id}" type="text" placeholder="Answer${ch.u?' ('+ch.u+')':''}" onkeydown="if(event.key==='Enter')chkA('${ch.id}')">
+        ${ch.u?`<span style="font-size:13px;color:var(--mu)">${ch.u}</span>`:''}
+      </div>
+      <div class="brow">
+        <button class="btn btnp" onclick="chkA('${ch.id}')"><i data-lucide="check"></i>Check</button>
+        <button class="btn btnh" onclick="togH('${ch.id}')">Hint</button>
+        <button class="btn btno" onclick="skipA('${ch.id}')" style="font-size:12px;padding:7px 12px;">Skip</button>
+      </div>
+      <div class="fb2" id="chf-${ch.id}"></div>
+    `:`<div class="fb2 ${done.ok?'ok':'no'} show">${done.ok?'Solved':'Answer'} &mdash; ${ch.a} ${ch.u}<div class="sol">${ch.s}</div></div>`}`;
+    el.appendChild(d);
+  });
+  if(shown===0)el.innerHTML='<div class="card" style="text-align:center;color:var(--mu)">No questions in this view. Turn off Focus mode or pick another tab.</div>';
+  lucide.createIcons();
+}
+function togH(id){document.getElementById('chh-'+id).classList.toggle('show');}
+function findCH(id){return CH_ACTIVE.find(c=>c.id===id);}
+function skipA(id){
+  const ch=findCH(id);if(chDone[id])return;
+  chDone[id]={ok:false,skip:true};S.chSk++;S.streak=0;
+  const f=document.getElementById('chf-'+id);f.className='fb2 no show';
+  f.innerHTML=`Skipped. Answer: <strong>${ch.a} ${ch.u}</strong><div class="sol">${ch.s}</div>`;
+  document.querySelectorAll('#chq-'+id+' .ai, #chq-'+id+' .brow').forEach(e=>e.style.display='none');
+  updS();
+}
+function chkA(id){
+  const ch=findCH(id),inp=document.getElementById('cha-'+id),f=document.getElementById('chf-'+id);
+  f.classList.remove('ok','no');f.classList.add('show');
+  const val=parseFloat(inp.value.replace(/,/g,''));
+  if(isNaN(val)){inp.style.borderColor='var(--ac3)';return;}
+  const ok=Math.abs(val-ch.a)/(Math.abs(ch.a)||1)<0.025;
+  inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
+  f.classList.add(ok?'ok':'no');
+  if(ok){
+    f.innerHTML=`<strong>Correct!</strong> ${ch.a} ${ch.u}<div class="sol">${ch.s}</div>`;
+    if(!chDone[id]){chDone[id]={ok:true};S.chC++;S.streak++;}
+    document.querySelectorAll('#chq-'+id+' .ai, #chq-'+id+' .brow').forEach(e=>e.style.display='none');
+  }else{
+    f.innerHTML=`Incorrect. Your answer: ${val}. Try again, or Skip to reveal.<div class="sol" style="margin-top:8px;color:var(--mu);font-size:12px;">Hint: ${ch.h}</div>`;
+    if(!chDone[id]&&!f.dataset.counted){S.chW++;S.streak=0;f.dataset.counted='1';}
+  }
+  updS();
+}
+
+function renderMQTabs(){
+  const tks=[...new Set(MQ_ACTIVE.map(c=>c.tk))].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
+  const el=document.getElementById('mqtabs');
+  el.innerHTML=`<button class="ttab${mqFilter==='all'?' active':''}" onclick="filMQ('all',this)">All</button>`+
+    tks.map(tk=>`<button class="ttab${nf(tk)?' nf':''}${mqFilter===tk?' active':''}" onclick="filMQ('${tk}',this)">${TM[tk].label.split(' \u00b7 ')[0]}</button>`).join('');
+}
+function filMQ(t,b){mqFilter=t;document.querySelectorAll('#mqtabs .ttab').forEach(x=>x.classList.remove('active'));b.classList.add('active');renMQ();}
+function renMQ(){
+  const el=document.getElementById('mqcon');el.innerHTML='';
+  let shown=0;
+  MQ_ACTIVE.forEach(q=>{
+    if(FOCUS&&nf(q.tk))return;
+    if(mqFilter!=='all'&&q.tk!==mqFilter)return;
+    shown++;
+    const done=mqDone[q.id];
+    const d=document.createElement('div');d.className='qcard'+(nf(q.tk)?' nfq':'');d.id='mqq-'+q.id;
+    d.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+      <span class="qn">MCQ ${shown}</span>${topicBadge(q.tk)}
+      ${done!==undefined?'<span class="bdg bg" style="margin-left:auto">Answered</span>':''}
+    </div>
+    <div class="qt">${q.q}</div>
+    <div class="mopts" id="mqo-${q.id}">${q.opts.map((o,j)=>`<div class="mopt" id="mqo-${q.id}-${j}" onclick="chkMQ('${q.id}',${j})">
+      <div class="olet">${'ABCD'[j]}</div><div>${o}</div></div>`).join('')}</div>
+    <div class="fb2" id="mqf-${q.id}"></div>`;
+    el.appendChild(d);
+    if(done!==undefined)lockMQ(q,done);
+  });
+  if(shown===0)el.innerHTML='<div class="card" style="text-align:center;color:var(--mu)">No questions in this view. Turn off Focus mode or pick another tab.</div>';
+}
+function findMQ(id){return MQ_ACTIVE.find(q=>q.id===id);}
+function lockMQ(q,chosen){
+  const f=document.getElementById('mqf-'+q.id);f.classList.add('show');
+  for(let j=0;j<q.opts.length;j++){
+    const o=document.getElementById('mqo-'+q.id+'-'+j);if(!o)continue;o.style.pointerEvents='none';
+    if(j===q.c)o.classList.add('ca');else if(j===chosen&&chosen!==q.c)o.classList.add('wa');
+  }
+  if(chosen===q.c){f.classList.add('ok');f.innerHTML=`<strong>Correct.</strong> ${q.e}`;}
+  else{f.classList.add('no');f.innerHTML=`<strong>Incorrect.</strong> Right: <strong>${'ABCD'[q.c]}</strong>. ${q.e}`;}
+}
+function chkMQ(id,chosen){
+  if(mqDone[id]!==undefined)return;
+  const q=findMQ(id);mqDone[id]=chosen;
+  if(chosen===q.c){S.mqC++;S.streak++;}else{S.mqW++;S.streak=0;}
+  lockMQ(q,chosen);updS();
+}
+
+/* =========================================================================
+   TOPIC GUIDE & FORMULA REFERENCE (static)
+   ========================================================================= */
+const TG=[
+  {tk:'T1',w:'The foundation \u2014 what a computer IS: structure, functions, historical evolution.',
+   c:['Architecture vs Organization: Architecture = programmer-visible (ISA, registers, addressing). Organization = physical implementation (circuits, control signals).','4 Functions: Data Processing, Storage, Movement, Control \u2014 all 4 occur in general-purpose programs.','CPU structure: ALU, Control Unit, Registers, Internal Bus.','History: EDVAC vacuum tubes; IAS first stored-program; IBM 7094 added floating-point hardware.'],
+   e:'Theory only. Architecture vs Organization, 4 functions, CPU components, historical differences.'},
+  {tk:'T2',w:'CPI, MIPS, and Execution Time \u2014 the three core CPU performance measures.',
+   c:['Total Cycles = \u03a3(count \u00d7 CPI_type) FIRST, then CPI = Total / IC.','CPI < 1 \u2192 superscalar. MIPS = Clock(Hz)/(CPI\u00d710\u2076).','Execution Time = (IC \u00d7 CPI)/Clock.','Speedup = Time_slow/Time_fast (\u2265 1).','Same-arch clock change: MIPS scales linearly; real gain limited by memory/bus.'],
+   e:'HIGH priority. 2\u20133 calculations. Order: table \u2192 total cycles \u2192 CPI \u2192 MIPS \u2192 time.'},
+  {tk:'T3',w:'The bus is the highway between CPU, memory, and I/O. Rate depends on width, clock, cycles/transfer.',
+   c:['Transfer Rate = Bus Width (BYTES) \u00d7 Clock / Bus Cycles. Convert bits\u2192bytes first!','Synchronous = shared clock; Asynchronous = handshaking, mixed speeds.','Multiple bus reduces contention vs single bus.','Vectored interrupts let a device identify itself to the CPU.'],
+   e:'One calculation (transfer rate). Theory on sync vs async, multiple-bus benefit, interrupts.'},
+  {tk:'T4',w:'Cache stores recently-used data to avoid slow main-memory accesses.',
+   c:['Direct mapping: address = [Tag | Line | Byte]. Each block \u2192 1 line.','Set-associative: block \u2192 a set with N choices. Fewer conflicts.','T_avg = H\u00d7T_cache + (1\u2212H)\u00d7T_miss. Re-execute \u2192 T_miss = T_cache + T_main.','Replacement: LRU / FIFO / Random. Write-through vs write-back.'],
+   e:'HIGH priority. Address bit-split, line mapping, AMAT, set-associative config.'},
+  {tk:'T5',w:'SRAM vs DRAM, ROM types, and Hamming error correction.',
+   c:['SRAM: 6T flip-flop, fast, no refresh (cache). DRAM: 1T+1C, needs refresh (main memory), "analog".','DRAM denser because 1 bit = 1T vs 6T.','ROM/EPROM(UV)/EEPROM(electrical, byte)/Flash(electrical, block).','S in SDRAM = Synchronous. Hamming: parity at 1,2,4,8 \u2192 4 check bits for 8 data bits.'],
+   e:'Theory on SRAM/DRAM/ROM. One Hamming calculation \u2014 use the tool.'},
+  {tk:'T6',w:'Disk access = seek + latency + transfer. RAID combines disks for capacity/redundancy.',
+   c:['Avg Seek = Max/3. Avg Latency = half a revolution.','Transfer = (1/sectors)\u00d7rev time. Capacity = Surfaces\u00d7Tracks\u00d7Sectors\u00d7Size.','RAID 0=N\u00d7, 1=\u230aN/2\u230b\u00d7, 3/4/5=(N\u22121)\u00d7, 6=(N\u22122)\u00d7.','Same-cylinder accesses skip seek (head selection only).'],
+   e:'HIGH priority. Multiple calcs. Trap: RAID 1 odd drives use floor(N/2).'},
+  {tk:'T7',w:'Three I/O techniques: programmed, interrupt-driven, DMA.',
+   c:['Programmed (polling): CPU constantly checks \u2014 wastes cycles.','Interrupt-driven: device signals CPU when ready.','DMA: controller transfers directly, cycle stealing.','Memory-mapped vs isolated (IN/OUT) I/O.'],
+   e:'Theory only. 3 techniques + tradeoffs. Memory-mapped vs isolated.'},
+  {tk:'T8',w:'Instruction formats, address types, and shift operations.',
+   c:['Elements: opcode, source operands, result, next instruction.','1-address (accumulator) > 2-address \u2265 3-address in instruction count.','Shift: Logical fill 0; Arithmetic Right fill MSB; Rotate wraps.','JUMP/BRANCH enable loops, conditionals, function calls.'],
+   e:'6 shift types with 10101110. Possible instruction-sequence writing.'},
+  {tk:'T9',w:"Amdahl's Law, RISC, SMP, and MESI cache coherence.",
+   c:['SMP: identical processors share memory + OS equally (UMA).','RISC: many registers, simple fixed-length load/store, pipeline-friendly.','MESI: Modified / Exclusive / Shared / Invalid.','Amdahl: MIPS_eff = x/((1\u2212\u03b1)+\u03b1/n). Sequential part caps speedup.'],
+   e:'Solve for \u03b1, task speedup, MESI states, SMP. (Kept for reference.)'},
+  {tk:'T10',w:'Overlap instruction stages like an assembly line \u2014 big throughput gains.',
+   c:['Cycle = unpipelined/stages + latch. T_piped = (k+N\u22121)\u00d7cycle.','T_unpiped = N\u00d7k\u00d7cycle. Speedup \u2192 k as N\u2192\u221e.','Latency = k\u00d7cycle (one instruction slower, throughput better).','Hazards: data (forwarding/stall), control (prediction/delayed branch/flush), structural (resource).'],
+   e:'HIGH priority \u2014 biggest weight. Cycle time, total time, speedup, hazards, branch handling.'},
+];
+
+const FS=[
+  {id:'cpu',lbl:'CPU (T2)',items:[
+    {n:'F1',nm:'Total Cycles (instruction mix)',w:'Instruction table given. ALWAYS first step.',f:'Total Cycles = \u03a3 (Count_type \u00d7 CPI_type)',ex:'45000\u00d71 + 32000\u00d72 + 15000\u00d72 + 8000\u00d72 = 155,000'},
+    {n:'F2',nm:'CPI',w:'After total cycles. Detects superscalar.',f:'CPI = Total Cycles / Instruction Count',warn:'CPI < 1 \u2192 SUPERSCALAR.',ex:'155,000 / 100,000 = 1.55'},
+    {n:'F3',nm:'MIPS Rate',w:'How fast is the processor?',f:'MIPS = Clock Rate / (CPI \u00d7 10\u2076)',vr:[['Clock Rate','In Hz. 80 MHz = 80,000,000']],ex:'80,000,000/(1.55\u00d710\u2076)=51.6 MIPS'},
+    {n:'F4',nm:'Execution Time',w:'How long does the program take?',f:'T = (IC \u00d7 CPI) / Clock Rate',ex:'155,000/80,000,000 = 1.94 ms'},
+    {n:'F5',nm:'Speedup (A vs B)',w:'Two computers, which is faster?',f:'Time/instr = CPI \u00d7 Cycle Time\nSpeedup = Time_slow / Time_fast',warn:'Speedup \u2265 1. If < 1, you flipped it.',ex:'A=500ps, B=600ps \u2192 1.2\u00d7'},
+    {n:'F6',nm:'MIPS after clock change',w:'Same architecture, different clock.',f:"p' = p \u00d7 (new_clock / old_clock)",tip:'Only valid if architecture identical.',ex:"100 MIPS @50MHz \u2192 150 @75MHz"},
+  ]},
+  {id:'bus',lbl:'Bus (T3)',items:[
+    {n:'F7',nm:'Data Transfer Rate',w:'Bus width (bits), clock, cycles/transfer given.',f:'Rate = Bus Width (bytes) \u00d7 Clock / Bus Cycle',warn:'Convert bits \u2192 bytes first! 16-bit=2, 32-bit=4.',ex:'16-bit, 16MHz, 4 cycles \u2192 2\u00d716M/4 = 8 MB/s'},
+  ]},
+  {id:'cache',lbl:'Cache (T4)',items:[
+    {n:'F8',nm:'Address Bit Split',w:'Find tag/line/byte field sizes.',f:'Byte = log\u2082(block)\nLine = log\u2082(lines)\nTag = total \u2212 line \u2212 byte',warn:'Format [Tag | Line | Byte] MSB\u2192LSB.',ex:'16-bit, 32 lines, 8B \u2192 Byte=3, Line=5, Tag=8'},
+    {n:'F9',nm:'Which line?',w:'Extract the line field from a binary address.',f:'Drop byte bits (right), drop tag bits (left)\nMiddle line bits \u2192 decimal'},
+    {n:'F10',nm:'Set-Associative Config',w:'N-way set associative.',f:'Total lines = size / line size\nSets = lines / N\nTag = addr \u2212 set bits \u2212 offset',ex:'64KB, 128B, 4-way \u2192 128 sets, Tag=18'},
+    {n:'F11',nm:'Average Access Time',w:'Given H, T_cache, T_miss.',f:'T_avg = H\u00d7T_cache + (1\u2212H)\u00d7T_miss',warn:'Re-execute after fetch \u2192 T_miss = T_cache + T_main.',ex:'H=0.95, Tc=2.5, Tm=127.5 \u2192 8.75 ns'},
+    {n:'F12',nm:'Two-Level Cache',w:'L1 + L2 with separate hit ratios.',f:'T_avg = H1\u00d7Tc1 + (H2\u2212H1)\u00d7Tc2 + (1\u2212H2)\u00d7Tm',vr:[['H2','COMBINED L1+L2 ratio']]},
+  ]},
+  {id:'disk',lbl:'Disk (T6)',items:[
+    {n:'F13',nm:'Avg Seek',w:'Max seek given.',f:'Avg Seek = (1/3) \u00d7 Max Seek',tip:'1ms/100 tracks, 30,000 tracks \u2192 Max=300 \u2192 Avg=100ms'},
+    {n:'F14',nm:'Avg Rotational Latency',w:'RPM given.',f:'Avg = (1/2)\u00d7(60/RPM)\u00d71000 ms',ex:'7200 RPM \u2192 4.17ms'},
+    {n:'F15',nm:'Transfer Time',w:'Per sector.',f:'(1/sectors)\u00d7(60/RPM)\u00d71000 ms',ex:'7200 RPM, 600 sectors \u2192 0.0139ms'},
+    {n:'F16',nm:'Disk Capacity',w:'Full specs given.',f:'Surfaces \u00d7 Tracks \u00d7 Sectors \u00d7 Bytes/sector',ex:'16\u00d7512\u00d764\u00d71KB = 512 MB'},
+    {n:'F17',nm:'RAID Capacity',w:'N drives \u00d7 X GB.',f:'0=N\u00d7  1=\u230aN/2\u230b\u00d7  3/4/5=(N\u22121)\u00d7  6=(N\u22122)\u00d7',warn:'RAID 1 odd: \u230a5/2\u230b=2 pairs=600GB, NOT 750.'},
+  ]},
+  {id:'multi',lbl:'Multiproc (T9)',nfTab:true,items:[
+    {n:'F18',nm:"Amdahl's Law",w:'n processors, parallel fraction \u03b1.',f:'MIPS_eff = x / ((1\u2212\u03b1) + \u03b1/n)',tip:'Solve for \u03b1: denom = x/MIPS_eff, then isolate \u03b1.',ex:'n=16,x=6,target=54 \u2192 \u03b1=0.948'},
+    {n:'F19',nm:'Task Distribution Speedup',w:'Tasks, N processors.',f:'T_serial = sum of tasks\nT_parallel = SLOWEST processor\nSpeedup = T_serial / T_parallel',warn:'Parallel time = bottleneck, not average. Assign biggest first.'},
+  ]},
+  {id:'pipe',lbl:'Pipeline (T10)',items:[
+    {n:'F20',nm:'Pipeline Cycle Time',w:'Unpipelined cycle, stages, latch.',f:'Cycle = (Unpipelined / stages) + latch',ex:'10ns, 4 stages, 0.5ns \u2192 3.0ns'},
+    {n:'F21',nm:'Total Execution Time',w:'N instructions, k stages.',f:'T_piped = (k+N\u22121)\u00d7cycle\nT_unpiped = N\u00d7k\u00d7cycle',ex:'k=6, N=600 \u2192 605 units'},
+    {n:'F22',nm:'Latency (1 instruction)',w:'End-to-end for one instruction.',f:'Latency = k \u00d7 cycle',warn:'More stages \u2192 higher latency but higher throughput.'},
+    {n:'F23',nm:'Speedup',w:'Pipelined vs unpipelined.',f:'Speedup = T_unpiped / T_piped',tip:'\u2192 k as N\u2192\u221e, always slightly less.'},
+    {n:'F24',nm:'Effective CPI w/ stalls',w:'Branch mispredict penalty.',f:'CPI_eff = 1 + (branch%)\u00d7(mispredict%)\u00d7penalty',ex:'15% br, 30% miss, 4 cyc \u2192 1.18'},
+  ]},
+];
+
+function renderTG(){
+  document.getElementById('tgcon').innerHTML=TG.filter(t=>!(FOCUS&&nf(t.tk))).map(t=>`
+    <div class="card${nf(t.tk)?' nfq':''}">
+      <div class="ct" style="font-size:16px;">${TM[t.tk].label}${nf(t.tk)?' <span class="bnf" style="margin-left:6px;">Not in final</span>':''}</div>
+      <div style="font-size:13px;color:var(--mu);margin-bottom:14px;line-height:1.7;">${t.w}</div>
+      <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Key Concepts</div>
+      <div style="display:grid;gap:7px;margin-bottom:14px;">${t.c.map(c=>`<div style="background:var(--sf2);border-radius:7px;padding:9px 12px;font-size:13px;color:var(--tx);line-height:1.65;border-left:2px solid var(--bd2);">${c}</div>`).join('')}</div>
+      <div class="tb"><strong>Exam focus:</strong> ${t.e}</div>
+    </div>`).join('');
+}
+function renderFR(){
+  const secs=FS.filter(s=>!(FOCUS&&s.nfTab));
+  document.getElementById('ftabs').innerHTML=secs.map((s,i)=>`<button class="rtab${i===0?' active':''}" onclick="showRef('${s.id}',this)">${s.lbl}${s.nfTab?' \u2298':''}</button>`).join('');
+  document.getElementById('fsecs').innerHTML=secs.map((s,i)=>`<div id="rf-${s.id}" class="rsec${i===0?' active':''}">
+    ${s.nfTab?'<div class="nfbanner"><i data-lucide="alert-triangle"></i><div>These formulas are from <strong>T9 Multiprocessors</strong> \u2014 not in the final exam. Kept for completeness.</div></div>':''}
+    ${s.items.map(f=>`
+    <div class="card">
+      <div class="qn">${f.n} &middot; ${f.nm}</div>
+      <div style="font-size:12px;color:var(--mu);margin-bottom:10px;"><strong>Use when:</strong> ${f.w}</div>
+      <div class="fmb">${f.f}</div>
+      ${f.vr&&f.vr.length?`<div class="vg">${f.vr.map(([k,v])=>`<span class="vk">${k}</span><span class="vv">${v}</span>`).join('')}</div>`:''}
+      ${f.warn?`<div class="wb">${f.warn}</div>`:''}
+      ${f.tip?`<div class="tb">${f.tip}</div>`:''}
+      ${f.ex?`<div class="tb"><strong>Example:</strong> ${f.ex}</div>`:''}
+    </div>`).join('')}</div>`).join('');
+  lucide.createIcons();
+}
+function showRef(id,btn){
+  document.querySelectorAll('#fsecs .rsec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('#ftabs .rtab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('rf-'+id).classList.add('active');btn.classList.add('active');
+}
+
+/* =========================================================================
+   TOOLS (shift, hamming, mapper, calculator)
+   ========================================================================= */
+function renBits(cid,bits,nfa){const c=document.getElementById(cid);c.innerHTML='';bits.forEach((b,i)=>{const d=document.createElement('div');d.className=`bit b${b}${nfa&&nfa[i]?' bnew':''}`;d.textContent=b;c.appendChild(d);});}
+function apSh(bits,n,type){
+  const msb=bits[0];let r,nfa,lbl,exp;
+  switch(type){
+    case'lr':r=[...Array(n).fill(0),...bits.slice(0,8-n)];nfa=[...Array(n).fill(true),...Array(8-n).fill(false)];lbl=`Logical Right (${n})`;exp=`Fill ${n} left positions with <strong style="color:var(--ac2)">0</strong>. Right ${n} bits discarded.`;break;
+    case'll':r=[...bits.slice(n),...Array(n).fill(0)];nfa=[...Array(8-n).fill(false),...Array(n).fill(true)];lbl=`Logical Left (${n})`;exp=`Fill ${n} right positions with <strong style="color:var(--ac2)">0</strong>. Left ${n} bits discarded.`;break;
+    case'ar':r=[...Array(n).fill(msb),...bits.slice(0,8-n)];nfa=[...Array(n).fill(true),...Array(8-n).fill(false)];lbl=`Arithmetic Right (${n})`;exp=`Fill ${n} left positions with <strong style="color:var(--ac3)">MSB=${msb}</strong> (sign preserved).`;break;
+    case'al':r=[...bits.slice(n),...Array(n).fill(0)];nfa=[...Array(8-n).fill(false),...Array(n).fill(true)];lbl=`Arithmetic Left (${n})`;exp=`Same as logical left. Fill ${n} right with <strong style="color:var(--ac2)">0</strong>.`;break;
+    case'rr':r=[...bits.slice(8-n),...bits.slice(0,8-n)];nfa=[...Array(n).fill(true),...Array(8-n).fill(false)];lbl=`Right Rotate (${n})`;exp=`Right ${n} bits <strong style="color:var(--gn)">wrap to left</strong>. No bits lost.`;break;
+    case'rl':r=[...bits.slice(n),...bits.slice(0,n)];nfa=[...Array(8-n).fill(false),...Array(n).fill(true)];lbl=`Left Rotate (${n})`;exp=`Left ${n} bits <strong style="color:var(--gn)">wrap to right</strong>. No bits lost.`;break;
+  }
+  return{r,nfa,lbl,exp};
+}
+function doShift(){
+  const raw=document.getElementById('bin-in').value.replace(/[^01]/g,'').slice(0,8).padStart(8,'0');
+  document.getElementById('bin-in').value=raw;
+  const bits=raw.split('').map(Number),n=parseInt(document.getElementById('sh-n').value),type=document.getElementById('sh-t').value;
+  renBits('bits-orig',bits,null);
+  const{r,nfa,lbl,exp}=apSh(bits,n,type);
+  renBits('bits-res',r,nfa);
+  document.getElementById('sh-lbl').textContent=lbl;
+  document.getElementById('sh-exp').innerHTML=exp+` &nbsp;Result = <strong>${r.join('')}</strong> = ${parseInt(r.join(''),2)} (decimal).`;
+  const types=['lr','ll','ar','al','rr','rl'];
+  const rl={lr:'Fill 0 left',ll:'Fill 0 right',ar:'Fill MSB left',al:'Same as logical left',rr:'Right\u2192left',rl:'Left\u2192right'};
+  const ln={lr:'Logical Right',ll:'Logical Left',ar:'Arithmetic Right',al:'Arithmetic Left',rr:'Right Rotate',rl:'Left Rotate'};
+  document.getElementById('all-sh').innerHTML='<table><tr><th>Type</th><th>Result</th><th>Decimal</th><th>Rule</th></tr>'+
+    types.map(k=>{const{r:res}=apSh(bits,n,k);return`<tr><td>${ln[k]}</td><td><span style="font-family:var(--mo);color:var(--ac2);letter-spacing:2px;">${res.join('')}</span></td><td style="color:var(--mu)">${parseInt(res.join(''),2)}</td><td style="font-family:var(--sn);color:var(--mu)">${rl[k]}</td></tr>`;}).join('')+'</table>';
+  lucide.createIcons();
+}
+function calcHam(){
+  const raw=document.getElementById('ham-in').value.replace(/[^01]/g,'').slice(0,8).padStart(8,'0');
+  document.getElementById('ham-in').value=raw;
+  const D=raw.split('').map(Number),dataPos=[3,5,6,7,9,10,11,12],cw=Array(13).fill(0);
+  dataPos.forEach((p,i)=>cw[p]=D[i]);
+  const xp=(pos)=>pos.slice(1).reduce((a,p)=>a^cw[p],0);
+  cw[1]=xp([1,3,5,7,9,11]);cw[2]=xp([2,3,6,7,10,11]);cw[4]=xp([4,5,6,7,12]);cw[8]=xp([8,9,10,11,12]);
+  const lbl=['','P1','P2','D1','P4','D2','D3','D4','P8','D5','D6','D7','D8'];
+  const isp=[false,true,true,false,true,false,false,false,true,false,false,false,false];
+  let html=`<div style="margin-bottom:10px;font-size:13px;color:var(--mu);">12-position codeword:</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;">`;
+  for(let i=1;i<=12;i++)html+=`<div class="hcell ${isp[i]?'hpar':'hdat'}"><div class="hcp2">p${i}<br>${lbl[i]}</div><div>${cw[i]}</div></div>`;
+  html+=`</div><div class="fmb">P1(pos1)=${cw[1]}  checks: 1,3,5,7,9,11\nP2(pos2)=${cw[2]}  checks: 2,3,6,7,10,11\nP4(pos4)=${cw[4]}  checks: 4,5,6,7,12\nP8(pos8)=${cw[8]}  checks: 8,9,10,11,12\n\nFull codeword: ${cw.slice(1).join(' ')}</div>`;
+  html+=`<div class="tb">Data: ${raw} &rarr; Codeword: <strong>${cw.slice(1).join('')}</strong><br>Check bits: P1=${cw[1]}, P2=${cw[2]}, P4=${cw[4]}, P8=${cw[8]}</div>`;
+  document.getElementById('ham-out').innerHTML=html;
+}
+function updMap(){
+  const ab=parseInt(document.getElementById('m-ab').value),cl=parseInt(document.getElementById('m-cl').value),bs=parseInt(document.getElementById('m-bs').value);
+  const bb=Math.log2(bs),lb=Math.log2(cl),tb=ab-lb-bb;
+  document.getElementById('m-cfg').innerHTML=`<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;">
+    <span class="atg at" style="padding:6px 14px;font-size:14px;">Tag: ${tb} bits</span><span style="color:var(--mu)">|</span>
+    <span class="atg al2" style="padding:6px 14px;font-size:14px;">Line: ${lb} bits</span><span style="color:var(--mu)">|</span>
+    <span class="atg ab2" style="padding:6px 14px;font-size:14px;">Byte: ${bb} bits</span></div>
+    <div style="margin-top:8px;font-size:12px;color:var(--mu);">Format: [${tb}-bit Tag | ${lb}-bit Line | ${bb}-bit Byte]</div>`;
+  const tutAddrs=['0001000100011011','1100001100110100','1101000000011101','1010101010101010'];
+  const ta=document.getElementById('m-tut');
+  if(ab===16&&cl===32&&bs===8){
+    ta.innerHTML=tutAddrs.map(a=>{const v=parseInt(a,2),byf=v&((1<<bb)-1),lf=(v>>bb)&((1<<lb)-1),tf=v>>(bb+lb);
+      return`<div style="background:var(--sf2);border-radius:7px;padding:9px 12px;margin-bottom:6px;font-size:12px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        <span class="atg at" style="font-size:11px;">Tag:${tf.toString(2).padStart(tb,'0')}(${tf})</span>
+        <span class="atg al2" style="font-size:11px;">Line:${lf.toString(2).padStart(lb,'0')}=<strong>${lf}</strong></span>
+        <span class="atg ab2" style="font-size:11px;">Byte:${byf.toString(2).padStart(bb,'0')}(${byf})</span>
+        <span style="color:var(--mu);font-family:var(--mo);font-size:11px;">[${a}]</span></div>`;}).join('');
+  }else{ta.innerHTML='<div style="font-size:12px;color:var(--mu);">Set 16-bit / 32 lines / 8 bytes to see Tutorial 4 addresses.</div>';}
+  traceAddr();
+}
+function traceAddr(){
+  const raw=document.getElementById('m-in').value.trim();if(!raw)return;
+  const out=document.getElementById('m-out');
+  const ab=parseInt(document.getElementById('m-ab').value),cl=parseInt(document.getElementById('m-cl').value),bs=parseInt(document.getElementById('m-bs').value);
+  const bb=Math.log2(bs),lb=Math.log2(cl),tb=ab-lb-bb;
+  let val;if(raw.startsWith('0x')||raw.startsWith('0X'))val=parseInt(raw,16);else val=parseInt(raw.replace(/\s/g,''),2);
+  if(isNaN(val)){out.innerHTML='<div class="wb">Invalid address. Use binary or 0x hex.</div>';return;}
+  const bin=val.toString(2).padStart(ab,'0'),byf=val&((1<<bb)-1),lf=(val>>bb)&((1<<lb)-1),tf=val>>(bb+lb);
+  out.innerHTML=`<div style="background:var(--sf2);border-radius:8px;padding:14px;font-family:var(--mo);font-size:13px;line-height:2.2;">
+    Full binary: <span style="letter-spacing:2px;">${bin}</span><br>
+    <span class="atg at">${bin.slice(0,tb)}</span><span class="atg al2" style="margin:0 2px;">${bin.slice(tb,tb+lb)}</span><span class="atg ab2">${bin.slice(tb+lb)}</span><br>
+    <span class="atg at">Tag = ${tf.toString(2).padStart(tb,'0')} (decimal ${tf})</span><br>
+    <span class="atg al2">Line = ${lf.toString(2).padStart(lb,'0')} &rarr; Cache Line <strong>${lf}</strong></span><br>
+    <span class="atg ab2">Byte offset = ${byf.toString(2).padStart(bb,'0')} (${byf})</span></div>`;
+}
+const CALCS=[
+  {id:'cpu',lbl:'CPU (T2)',f:[['clock','Clock (MHz)','80'],['cycles','Total Cycles','155000'],['ic','Instruction Count','100000']],
+   fn(f){const clk=f.clock*1e6,cpi=f.cycles/f.ic,mips=clk/(cpi*1e6),t=f.cycles/clk*1000;return`CPI = ${cpi.toFixed(4)}<br>MIPS = ${mips.toFixed(2)}<br>Exec Time = ${t.toFixed(4)} ms${cpi<1?' &nbsp;<span style="color:var(--gn)">(Superscalar!)</span>':''}`;}},
+  {id:'bus',lbl:'Bus (T3)',f:[['bw','Bus Width (bits)','16'],['bclk','Clock (MHz)','16'],['bc','Cycles/Transfer','4']],
+   fn(f){const b=f.bw/8,r=b*f.bclk*1e6/f.bc;return`Width = ${b} bytes<br>Rate = ${(r/1e6).toFixed(4)} MB/s = ${r.toLocaleString()} bytes/s`;}},
+  {id:'cache',lbl:'Cache (T4)',f:[['tc','T_cache (ns)','2.5'],['h','Hit ratio H','0.95'],['tm','T_miss (ns)','127.5']],
+   fn(f){return`T_avg = ${(f.h*f.tc+(1-f.h)*f.tm).toFixed(4)} ns`;}},
+  {id:'disk',lbl:'Disk (T6)',f:[['rpm','RPM','7200'],['sec','Sectors/track','600'],['ms','Max Seek (ms)','300']],
+   fn(f){const rev=(60/f.rpm)*1000,s=f.ms/3,l=rev/2,x=(1/f.sec)*rev;return`Avg Seek = ${s.toFixed(2)} ms<br>Avg Latency = ${l.toFixed(2)} ms<br>Transfer = ${x.toFixed(4)} ms<br>Total = ${(s+l+x).toFixed(2)} ms`;}},
+  {id:'raid',lbl:'RAID (T6)',f:[['n','Drives (N)','5'],['c','Cap/drive (GB)','300']],
+   fn(f){const N=f.n,C=f.c;return`RAID 0: ${N*C} GB<br>RAID 1: ${Math.floor(N/2)*C} GB (floor(${N}/2)=${Math.floor(N/2)} pairs)<br>RAID 3/4/5: ${(N-1)*C} GB<br>RAID 6: ${(N-2)*C} GB`;}},
+  {id:'pipe',lbl:'Pipeline (T10)',f:[['u','Unpipelined (ns)','10'],['k','Stages (k)','6'],['l','Latch (ns)','0.5'],['N','Instructions (N)','600']],
+   fn(f){const cy=f.u/f.k+f.l,Tp=(f.k+f.N-1)*cy,Tu=f.N*f.u,sp=Tu/Tp,lat=f.k*cy;return`Cycle = ${cy.toFixed(3)} ns<br>T_pipelined = ${Tp.toFixed(1)} ns<br>T_unpipelined = ${Tu.toFixed(1)} ns<br>Speedup = ${sp.toFixed(3)}&times;<br>Latency = ${lat.toFixed(2)} ns`;}},
+  {id:'amd',lbl:"Amdahl (T9 \u2298)",f:[['x','MIPS/proc (x)','6'],['n','Procs (n)','16'],['a','alpha (0-1)','0.948']],
+   fn(f){const e=f.x/((1-f.a)+f.a/f.n);return`Effective MIPS = ${e.toFixed(2)} <span style="color:var(--rd);font-size:12px;">(T9 \u2014 not in final)</span>`;}},
+];
+function initCALC(){
+  document.getElementById('cal-tabs').innerHTML=CALCS.map((c,i)=>`<button class="ttab${i===0?' active':''}" onclick="showCT('${c.id}',this)">${c.lbl}</button>`).join('');
+  document.getElementById('cal-con').innerHTML=CALCS.map((c,i)=>`<div id="cal-${c.id}" class="rsec${i===0?' active':''}">
+    <div class="card"><div class="ct">${c.lbl}</div>
+    ${c.f.map(([fid,lbl,ph])=>`<div style="margin-bottom:12px;"><div style="font-size:12px;color:var(--mu);margin-bottom:5px;">${lbl}</div>
+      <input class="ci2" type="number" id="cf-${c.id}-${fid}" placeholder="${ph}" step="any" oninput="runC('${c.id}')"></div>`).join('')}
+    <button class="btn btnp" onclick="runC('${c.id}')"><i data-lucide="calculator"></i>Calculate</button>
+    <div class="co2" id="co-${c.id}"></div></div></div>`).join('');
+  lucide.createIcons();
+}
+function showCT(id,btn){
+  document.querySelectorAll('#cal-con .rsec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('#cal-tabs .ttab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('cal-'+id).classList.add('active');btn.classList.add('active');
+}
+function runC(id){
+  const c=CALCS.find(x=>x.id===id);const f={};let ok=true;
+  c.f.forEach(([fid])=>{const v=parseFloat(document.getElementById('cf-'+id+'-'+fid).value);if(isNaN(v))ok=false;else f[fid]=v;});
+  const o=document.getElementById('co-'+id);
+  if(!ok){o.style.display='none';return;}
+  try{o.innerHTML=c.fn(f);o.style.display='block';}catch(e){o.innerHTML='Check inputs.';o.style.display='block';}
+}
+
+/* =========================================================================
+   STATS / NAV / FOCUS
+   ========================================================================= */
+function updS(){
+  const chTot=CH_ACTIVE.length,mqTot=MQ_ACTIVE.length;
+  const chSolved=Object.values(chDone).filter(x=>x.ok).length;
+  const chSeen=Object.keys(chDone).length;
+  const acc=S.chC+S.chW>0?Math.round(S.chC/(S.chC+S.chW)*100):null;
+  document.getElementById('stat-s').textContent=chSolved;
+  document.getElementById('stat-s2').textContent='of '+chTot;
+  document.getElementById('stat-a').textContent=acc!==null?acc+'%':'\u2014';
+  document.getElementById('stat-m').textContent=S.mqC;
+  document.getElementById('stat-m2').textContent='of '+mqTot;
+  document.getElementById('stat-k').textContent=S.streak;
+  const total=chTot+mqTot,done=chSeen+Object.keys(mqDone).length;
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('ppt').textContent=pct+'%';
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('ch-c').textContent=S.chC;
+  document.getElementById('ch-w').textContent=S.chW;
+  document.getElementById('ch-sk').textContent=S.chSk;
+  document.getElementById('ch-r').textContent=chTot-chSeen;
+  document.getElementById('mq-c').textContent=S.mqC;
+  document.getElementById('mq-w').textContent=S.mqW;
+  document.getElementById('mq-r').textContent=mqTot-Object.keys(mqDone).length;
+  document.getElementById('nb-ch').textContent=chTot-chSeen||chTot;
+  document.getElementById('nb-mcq').textContent=mqTot-Object.keys(mqDone).length||mqTot;
+  const el=document.getElementById('tprog');if(!el)return;
+  const tks=[...new Set(CH_ACTIVE.map(c=>c.tk))].filter(tk=>!(FOCUS&&nf(tk))).sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
+  el.innerHTML=tks.map(tk=>{
+    const tot=CH_ACTIVE.filter(c=>c.tk===tk).length;
+    const dn=CH_ACTIVE.filter(c=>c.tk===tk&&chDone[c.id]&&chDone[c.id].ok).length;
+    const p=Math.round(dn/tot*100);
+    return`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>${TM[tk].label}${nf(tk)?' <span class="bnf">NF</span>':''}</span><span style="color:var(--mu)">${dn}/${tot}</span></div>
+    <div style="height:5px;background:var(--bd2);border-radius:99px;overflow:hidden;"><div style="height:100%;width:${p}%;background:${p===100?'var(--gn)':'linear-gradient(90deg,var(--ac),var(--ac2))'};border-radius:99px;transition:width .4s;"></div></div></div>`;
+  }).join('');
+}
+function togSB(){document.getElementById('sb').classList.toggle('open');document.getElementById('ov').classList.toggle('open');}
+function showP(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nvi').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  document.getElementById('sb').classList.remove('open');
+  document.getElementById('ov').classList.remove('open');
+  updS();lucide.createIcons();
+}
+function togFocus(){
+  FOCUS=!FOCUS;
+  document.getElementById('focsw').classList.toggle('on',FOCUS);
+  // if current filter points at a now-hidden topic, reset to all
+  if(FOCUS&&nf(chFilter))chFilter='all';
+  if(FOCUS&&nf(mqFilter))mqFilter='all';
+  renderTG();renderFR();renderCHTabs();renCH();renderMQTabs();renMQ();updS();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  lucide.createIcons();
+  renderTG();renderFR();initCALC();
+  regenCH();regenMQ();
+  doShift();calcHam();updMap();
+  document.getElementById('bin-in').addEventListener('input',doShift);
+  document.getElementById('ham-in').addEventListener('input',calcHam);
+  document.getElementById('m-in').addEventListener('keydown',e=>{if(e.key==='Enter')traceAddr();});
+  updS();
+});
+</script>
+</body>
+</html>
